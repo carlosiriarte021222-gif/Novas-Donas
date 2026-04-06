@@ -1,267 +1,91 @@
 <!DOCTYPE html>
 <html lang="es">
 <head>
-<meta charset="UTF-8">
-<title>Donas Nova</title>
-<script src="https://cdn.tailwindcss.com"></script>
-<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>DonutOS Ultra PRO</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600;800&display=swap" rel="stylesheet">
+    <style>
+        body { font-family: 'Inter', sans-serif; }
+        .glass { background: rgba(255, 255, 255, 0.95); backdrop-filter: blur(10px); }
+        .section-active { display: block !important; animation: fadeIn 0.3s ease-in; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+    </style>
 </head>
-
-<body class="bg-slate-100">
-
-<nav class="bg-pink-600 text-white p-4 flex gap-2">
-<button onclick="view('dashboard')">Dashboard</button>
-<button onclick="view('inventario')">Inventario</button>
-<button onclick="view('produccion')">Producción</button>
-<button onclick="view('ventas')">Ventas</button>
-<button onclick="view('finanzas')">Finanzas</button>
-</nav>
-
-<div class="p-4">
-
-<!-- DASHBOARD -->
-<section id="dashboard">
-<h2 class="text-xl font-bold mb-4">📊 Dashboard</h2>
-
-<div class="grid grid-cols-2 gap-4">
-
-<div class="bg-white p-4 rounded">
-<h3>Ventas Hoy</h3>
-<p id="ventasHoy"></p>
-</div>
-
-<div class="bg-white p-4 rounded">
-<h3>Punto de Quiebre</h3>
-<p id="quiebre"></p>
-</div>
-
-<div class="bg-white p-4 rounded col-span-2">
-<canvas id="chart"></canvas>
-</div>
-
-<div class="bg-white p-4 rounded">
-<h3>Top Productos</h3>
-<ul id="top"></ul>
-</div>
-
-<div class="bg-white p-4 rounded">
-<h3>Ventas por Método</h3>
-<ul id="metodos"></ul>
-</div>
-
-<div id="alertas" class="bg-red-100 p-3 rounded col-span-2"></div>
-
-</div>
-</section>
-
-<!-- INVENTARIO -->
-<section id="inventario" class="hidden">
-<h2 class="text-xl font-bold">📦 Inventario</h2>
-
-<input id="nombre" placeholder="Insumo">
-<input id="cant" type="number">
-<input id="costo" type="number">
-<input id="minimo" type="number" placeholder="Stock mínimo">
-
-<button onclick="addInsumo()">Agregar</button>
-
-<ul id="listaInv"></ul>
-
-<h3 class="mt-4 font-bold">Kardex</h3>
-<ul id="kardex"></ul>
-
-<button onclick="auditoria()">Auditoría sorpresa</button>
-</section>
-
-<!-- PRODUCCIÓN -->
-<section id="produccion" class="hidden">
-<h2 class="text-xl font-bold">👨‍🍳 Producción</h2>
-
-<button onclick="producir()">Producir Dona</button>
-<button onclick="merma()">Registrar Merma</button>
-
-<p id="costoDona"></p>
-</section>
-
-<!-- VENTAS -->
-<section id="ventas" class="hidden">
-<h2 class="text-xl font-bold">💰 POS</h2>
-
-<button onclick="venta(5000,'tradicional')">Dona $5000</button>
-<button onclick="venta(7000,'especial')">Especial $7000</button>
-
-<h3>Arqueo ciego</h3>
-<input id="arqueo" placeholder="Cuánto hay en caja">
-<button onclick="arqueoCaja()">Validar</button>
-
-<h3>Rutas</h3>
-<button onclick="despacho()">Crear ruta</button>
-</section>
-
-<!-- FINANZAS -->
-<section id="finanzas" class="hidden">
-<h2 class="text-xl font-bold">📈 Finanzas</h2>
-
-<input id="gastos" placeholder="Gastos diarios">
-<button onclick="setGastos()">Guardar</button>
-
-<h3>P&G</h3>
-<p id="pyg"></p>
-</section>
-
-</div>
-
-<script>
-
-let db = JSON.parse(localStorage.getItem("db")) || {
-inventario: [],
-ventas: [],
-kardex: [],
-gastos:0
-};
-
-function save(){
-localStorage.setItem("db",JSON.stringify(db));
-render();
-}
-
-function view(id){
-document.querySelectorAll("section").forEach(s=>s.classList.add("hidden"));
-document.getElementById(id).classList.remove("hidden");
-}
-
-function addInsumo(){
-let n = nombre.value;
-let c = cant.value*1000;
-let costo = costo.value/c;
-
-db.inventario.push({n,c,costo,min: minimo.value});
-
-db.kardex.push({tipo:"entrada",n,c,fecha:new Date()});
-
-save();
-}
-
-function producir(){
-let harina = db.inventario.find(i=>i.n=="harina");
-if(harina){
-harina.c -= 80;
-
-db.kardex.push({tipo:"salida",n:"harina",c:80});
-}
-
-save();
-}
-
-function merma(){
-db.kardex.push({tipo:"merma",c:50});
-save();
-}
-
-function venta(v,item){
-let metodo = prompt("efectivo/nequi/daviplata/tarjeta");
-let canal = prompt("local/ruta");
-
-db.ventas.push({v,item,metodo,canal});
-
-save();
-}
-
-function setGastos(){
-db.gastos = parseInt(gastos.value);
-save();
-}
-
-function arqueoCaja(){
-let real = db.ventas.reduce((a,b)=>a+b.v,0);
-alert("Sistema: "+real);
-}
-
-function despacho(){
-alert("Ruta creada (simulación)");
-}
-
-function auditoria(){
-let r = db.inventario[Math.floor(Math.random()*db.inventario.length)];
-alert("Pesar: "+r.n);
-}
-
-function render(){
-
-// ventas
-let total = db.ventas.reduce((a,b)=>a+b.v,0);
-ventasHoy.innerText = total;
-
-// quiebre
-quiebre.innerText = total>=db.gastos?"GANANCIA":"FALTA";
-
-// top productos
-let top = {};
-db.ventas.forEach(v=>top[v.item]=(top[v.item]||0)+1);
-
-topEl.innerHTML="";
-Object.entries(top).sort((a,b)=>b[1]-a[1]).slice(0,5)
-.forEach(t=>{
-let li=document.createElement("li");
-li.innerText=t[0]+" "+t[1];
-top.appendChild(li);
-});
-
-// metodos
-let m = {};
-db.ventas.forEach(v=>m[v.metodo]=(m[v.metodo]||0)+v.v);
-
-metodos.innerHTML="";
-Object.entries(m).forEach(x=>{
-let li=document.createElement("li");
-li.innerText=x[0]+" "+x[1];
-metodos.appendChild(li);
-});
-
-// alertas
-alertas.innerHTML="";
-db.inventario.forEach(i=>{
-if(i.c<i.min){
-alertas.innerHTML+="⚠ "+i.n+" bajo<br>";
-}
-});
-
-// inventario
-listaInv.innerHTML="";
-db.inventario.forEach(i=>{
-let li=document.createElement("li");
-li.innerText=i.n+" "+i.c;
-listaInv.appendChild(li);
-});
-
-// kardex
-kardex.innerHTML="";
-db.kardex.slice(-10).forEach(k=>{
-let li=document.createElement("li");
-li.innerText=k.tipo+" "+k.n;
-kardex.appendChild(li);
-});
-
-// P&G
-let costo= db.kardex.filter(k=>k.tipo=="salida").length*2000;
-pyg.innerText = total - costo - db.gastos;
-
-// gráfico
-if(window.g) g.destroy();
-
-g = new Chart(chart,{
-type:"bar",
-data:{
-labels:["Ventas","Gastos"],
-datasets:[{data:[total,db.gastos]}]
-}
-});
-
-}
-
-render();
-
-</script>
-
-</body>
-</html>
+<body class="bg-slate-900 text-slate-100 min-h-screen">
+
+    <nav class="bg-pink-600 p-4 sticky top-0 z-50 shadow-2xl flex flex-wrap gap-2 justify-center border-b-4 border-pink-800">
+        <button onclick="nav('dash')" class="px-4 py-2 bg-pink-700 hover:bg-pink-900 rounded-lg font-bold transition">📊 Dashboard</button>
+        <button onclick="nav('inv')" class="px-4 py-2 bg-pink-700 hover:bg-pink-900 rounded-lg font-bold transition">📦 Inventario</button>
+        <button onclick="nav('prod')" class="px-4 py-2 bg-pink-700 hover:bg-pink-900 rounded-lg font-bold transition">👨‍🍳 Producción</button>
+        <button onclick="nav('pos')" class="px-4 py-2 bg-pink-700 hover:bg-pink-900 rounded-lg font-bold transition">💰 Ventas</button>
+        <button onclick="nav('log')" class="px-4 py-2 bg-pink-700 hover:bg-pink-900 rounded-lg font-bold transition">🚚 Rutas</button>
+        <button onclick="nav('fin')" class="px-4 py-2 bg-pink-700 hover:bg-pink-900 rounded-lg font-bold transition">📈 Gastos y P&G</button>
+    </nav>
+
+    <div class="container mx-auto p-4 md:p-8">
+
+        <section id="dash" class="section-active hidden space-y-6">
+            <div class="grid grid-cols-1 md:grid-cols-4 gap-4">
+                <div class="bg-slate-800 p-6 rounded-2xl border-l-4 border-blue-400 shadow-xl">
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest">Ingresos Hoy</h3>
+                    <p id="txtVentas" class="text-3xl font-black text-white">$ 0</p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-2xl border-l-4 border-orange-400 shadow-xl">
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest">Punto Quiebre</h3>
+                    <p id="txtQuiebre" class="text-xl font-bold text-orange-400">Calculando...</p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-2xl border-l-4 border-green-400 shadow-xl">
+                    <h3 class="text-slate-400 text-xs font-bold uppercase tracking-widest">Utilidad Neta</h3>
+                    <p id="txtUtilidad" class="text-3xl font-black text-green-400">$ 0</p>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-2xl border-l-4 border-pink-400 shadow-xl flex items-center justify-center">
+                    <button onclick="exportar()" class="bg-pink-600 hover:bg-pink-700 px-4 py-2 rounded-lg font-bold text-sm">💾 Exportar Data</button>
+                </div>
+            </div>
+
+            <div class="grid grid-cols-1 lg:grid-cols-2 gap-6">
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+                    <h3 class="font-bold mb-4 flex items-center gap-2">📈 Comparativa Ventas vs Gastos</h3>
+                    <canvas id="chartGral" height="200"></canvas>
+                </div>
+                <div class="bg-slate-800 p-6 rounded-2xl shadow-xl border border-slate-700">
+                    <h3 class="font-bold mb-4 text-red-400">⚠️ Insumos por Agotarse</h3>
+                    <div id="listaAlertas" class="space-y-2"></div>
+                </div>
+            </div>
+        </section>
+
+        <section id="inv" class="hidden space-y-6">
+            <div class="bg-slate-800 p-6 rounded-2xl shadow-xl">
+                <h2 class="text-2xl font-black mb-6 text-pink-400">Bodega de Materia Prima</h2>
+                <div class="grid grid-cols-1 md:grid-cols-4 gap-4 mb-8">
+                    <input id="inv_nom" type="text" placeholder="Insumo (Ej: Harina)" class="bg-slate-700 border-none p-3 rounded-xl focus:ring-2 ring-pink-500 outline-none">
+                    <input id="inv_cant" type="number" placeholder="Cantidad (kg/lt)" class="bg-slate-700 border-none p-3 rounded-xl outline-none">
+                    <input id="inv_costo" type="number" placeholder="Costo Total COP" class="bg-slate-700 border-none p-3 rounded-xl outline-none">
+                    <button onclick="agregarInsumo()" class="bg-green-600 hover:bg-green-700 font-bold rounded-xl p-3 transition">📥 Cargar Insumo</button>
+                </div>
+                <div class="overflow-x-auto">
+                    <table class="w-full text-left border-collapse">
+                        <thead>
+                            <tr class="text-slate-500 border-b border-slate-700">
+                                <th class="py-3">Insumo</th>
+                                <th>Stock Actual</th>
+                                <th>Costo x Unidad</th>
+                                <th>Acción</th>
+                            </tr>
+                        </thead>
+                        <tbody id="tablaInv" class="divide-y divide-slate-700"></tbody>
+                    </table>
+                </div>
+            </div>
+        </section>
+
+        <section id="prod" class="hidden space-y-6">
+            <div class="bg-slate-800 p-8 rounded-3xl shadow-xl text-center border-2 border-orange-500/30">
+                <h2 class="text-3xl font-black mb-2">Área de Producción</h2>
+                <p class="text-slate-400 mb-8 italic">Se descontarán 80g de harina y 15g de azúcar por unidad.</p>
+                <div class="flex justify-center gap-4">
+                    <button onclick="producir(1)" class="bg-orange-500 hover:bg
