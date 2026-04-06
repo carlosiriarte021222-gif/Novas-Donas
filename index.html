@@ -1,236 +1,106 @@
-<!DOCTYPE html>
-<html lang="es">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>NOVA Donas - Sistema Contable Cartagena</title>
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.10.0/font/bootstrap-icons.css">
-    <style>
-        :root { --primary: #ffce00; --dark-bg: #0a0a0a; --card-bg: #141414; --border: #2a2a2a; }
-        body { background-color: var(--dark-bg); color: #f0f0f0; font-family: 'Segoe UI', system-ui, sans-serif; }
-        
-        /* Sidebar */
-        .sidebar { height: 100vh; background: #000; width: 260px; position: fixed; padding: 25px; border-right: 1px solid var(--border); z-index: 1000; }
-        .nav-link { color: #888; padding: 12px 15px; border-radius: 12px; margin-bottom: 8px; cursor: pointer; transition: 0.3s; display: flex; align-items: center; }
-        .nav-link:hover, .nav-link.active { background: rgba(255, 206, 0, 0.1); color: var(--primary); font-weight: 600; }
-        
-        /* Main */
-        .main-content { margin-left: 260px; padding: 40px; min-height: 100vh; }
-        .section { display: none; animation: fadeIn 0.4s ease; }
-        .section.active { display: block; }
-        
-        /* Cards & UI */
-        .card-nova { background: var(--card-bg); border: 1px solid var(--border); border-radius: 20px; padding: 25px; height: 100%; transition: 0.3s; }
-        .card-nova:hover { border-color: var(--primary); }
-        .btn-nova { background: var(--primary); color: #000; border: none; font-weight: 700; border-radius: 12px; padding: 12px 24px; }
-        .stat-val { font-size: 1.8rem; font-weight: 800; letter-spacing: -1px; }
-        
-        /* Tables & Forms */
-        .table { color: #f0f0f0; border-color: var(--border); vertical-align: middle; }
-        input, select { background: #1a1a1a !important; border: 1px solid var(--border) !important; color: white !important; padding: 12px !important; border-radius: 10px !important; }
-        
-        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
-        
-        .progress { background: #222; border-radius: 50px; height: 12px; border: 1px solid #333; }
-        .badge-status { padding: 6px 12px; border-radius: 8px; font-size: 0.75rem; font-weight: 700; }
-    </style>
-</head>
-<body>
+function renderizar() {
+    document.getElementById('user-name').innerText = db.user;
 
-<div class="sidebar">
-    <div class="mb-5 px-3">
-        <h2 style="color: var(--primary); font-weight: 900; letter-spacing: -1px;">NOVA PRO</h2>
-        <small class="text-muted">Gestión de Donas v3.0</small>
-    </div>
-    <nav>
-        <div class="nav-link active" onclick="show('dashboard')"><i class="bi bi-cpu-fill me-3"></i> Dashboard</div>
-        <div class="nav-link" onclick="show('ventas')"><i class="bi bi-cart-check-fill me-3"></i> Ventas</div>
-        <div class="nav-link" onclick="show('insumos')"><i class="bi bi-box-seam-fill me-3"></i> Inventario</div>
-        <div class="nav-link" onclick="show('gastos')"><i class="bi bi-wallet2 me-3"></i> Gastos Fijos</div>
-        <div class="nav-link" onclick="show('mermas')"><i class="bi bi-recycle me-3"></i> Mermas</div>
-    </nav>
-</div>
+    let tVentas = 0;
+    let tGastos = 0;
+    let tMermas = 0;
+    let tPendiente = 0;
 
-<div class="main-content">
-    
-    <div id="dashboard" class="section active">
-        <div class="d-flex justify-content-between align-items-center mb-4">
-            <h3>Resumen Contable (COP)</h3>
-            <div class="text-end">
-                <small class="text-muted d-block">Responsable actual:</small>
-                <strong id="resp-name" class="text-primary" onclick="cambiarUser()" style="cursor:pointer">Admin Nova</strong>
-            </div>
-        </div>
+    // =====================
+    // CALCULAR TOTALES
+    // =====================
+    db.ventas.forEach(v => {
+        tVentas += v.v2;
+        if (v.v3 === "Pendiente") tPendiente += v.v2;
+    });
 
-        <div class="row g-4 mb-4">
+    db.gastos.forEach(g => tGastos += g.v2);
+    db.mermas.forEach(m => tMermas += m.v2);
+
+    let utilidad = tVentas - (tGastos + tMermas);
+
+    // =====================
+    // MOSTRAR DASHBOARD
+    // =====================
+    document.getElementById('res-ing').innerText = moneda(tVentas);
+    document.getElementById('res-gas').innerText = moneda(tGastos + tMermas);
+    document.getElementById('res-deb').innerText = moneda(tPendiente);
+    document.getElementById('res-utl').innerText = moneda(utilidad);
+
+    // =====================
+    // PUNTO DE EQUILIBRIO
+    // =====================
+    let meta = tGastos + tMermas;
+    let progreso = meta > 0 ? (tVentas / meta) * 100 : 0;
+    progreso = Math.min(progreso, 100);
+
+    document.getElementById('q-barra').style.width = progreso + "%";
+    document.getElementById('q-barra').innerText = Math.round(progreso) + "%";
+
+    document.getElementById('q-mensaje').innerText =
+        progreso >= 100
+        ? "✅ Ya cubres tus costos. Estás generando ganancia."
+        : "⚠️ Aún no cubres costos. Sigue vendiendo.";
+
+    // =====================
+    // TABLA VENTAS
+    // =====================
+    const tv = document.getElementById('tabla-v');
+    tv.innerHTML = "";
+    db.ventas.forEach(v => {
+        tv.innerHTML += `
+            <tr>
+                <td>${v.v1}</td>
+                <td>${v.user}</td>
+                <td>${moneda(v.v2)}</td>
+                <td>${v.v3}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="borrar('ventas', ${v.id})">X</button></td>
+            </tr>`;
+    });
+
+    // =====================
+    // GASTOS
+    // =====================
+    const tg = document.getElementById('tabla-g');
+    tg.innerHTML = "";
+    db.gastos.forEach(g => {
+        tg.innerHTML += `
+            <tr>
+                <td>${g.v1}</td>
+                <td>${g.user}</td>
+                <td>${moneda(g.v2)}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="borrar('gastos', ${g.id})">X</button></td>
+            </tr>`;
+    });
+
+    // =====================
+    // MERMAS
+    // =====================
+    const tm = document.getElementById('tabla-m');
+    tm.innerHTML = "";
+    db.mermas.forEach(m => {
+        tm.innerHTML += `
+            <tr>
+                <td>${m.v1}</td>
+                <td>${moneda(m.v2)}</td>
+                <td>${m.user}</td>
+                <td><button class="btn btn-sm btn-danger" onclick="borrar('mermas', ${m.id})">X</button></td>
+            </tr>`;
+    });
+
+    // =====================
+    // INSUMOS (CARDS)
+    // =====================
+    const li = document.getElementById('lista-i');
+    li.innerHTML = "";
+    db.insumos.forEach(i => {
+        li.innerHTML += `
             <div class="col-md-3">
-                <div class="card-nova border-start border-success border-5">
-                    <small class="text-muted">INGRESOS TOTALES</small>
-                    <div class="stat-val text-success" id="s-ingresos">$ 0</div>
+                <div class="card-nova text-center">
+                    <h5>${i.v1}</h5>
+                    <p>${i.v2} ${i.v3}</p>
+                    <button class="btn btn-sm btn-danger" onclick="borrar('insumos', ${i.id})">Eliminar</button>
                 </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card-nova border-start border-danger border-5">
-                    <small class="text-muted">GASTOS Y PERDIDAS</small>
-                    <div class="stat-val text-danger" id="s-gastos">$ 0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card-nova border-start border-warning border-5">
-                    <small class="text-muted">CUENTAS X COBRAR</small>
-                    <div class="stat-val text-warning" id="s-deuda">$ 0</div>
-                </div>
-            </div>
-            <div class="col-md-3">
-                <div class="card-nova border-start border-info border-5">
-                    <small class="text-muted">UTILIDAD NETA</small>
-                    <div class="stat-val text-info" id="s-utilidad">$ 0</div>
-                </div>
-            </div>
-        </div>
-
-        <div class="row g-4">
-            <div class="col-md-8">
-                <div class="card-nova">
-                    <h5>Punto de Equilibrio (Meta de Gastos)</h5>
-                    <p id="txt-equilibrio" class="small mt-3">Calculando datos...</p>
-                    <div class="progress mb-2">
-                        <div id="bar-equilibrio" class="progress-bar bg-warning" role="progressbar" style="width: 0%"></div>
-                    </div>
-                </div>
-            </div>
-            <div class="col-md-4">
-                <div class="card-nova">
-                    <h5>Alertas de Insumos</h5>
-                    <div id="alertas-stock" class="small mt-2"></div>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <div id="ventas" class="section">
-        <div class="d-flex justify-content-between mb-4"><h2>Ventas Realizadas</h2><button class="btn btn-nova" onclick="openMod('venta')">+ Nueva Venta</button></div>
-        <div class="card-nova"><table class="table"><thead><tr><th>Fecha</th><th>Responsable</th><th>Cliente</th><th>Monto</th><th>Estado</th><th>Acción</th></tr></thead><tbody id="list-ventas"></tbody></table></div>
-    </div>
-
-    <div id="insumos" class="section">
-        <div class="d-flex justify-content-between mb-4"><h2>Inventario (Kg / L)</h2><button class="btn btn-nova" onclick="openMod('insumo')">+ Nuevo Insumo</button></div>
-        <div class="row g-3" id="list-insumos"></div>
-    </div>
-
-    <div id="gastos" class="section">
-        <div class="d-flex justify-content-between mb-4"><h2>Gastos Fijos</h2><button class="btn btn-nova" onclick="openMod('gasto')">+ Registrar Gasto</button></div>
-        <div class="card-nova"><table class="table"><thead><tr><th>Concepto</th><th>Responsable</th><th>Monto</th><th>Acción</th></tr></thead><tbody id="list-gastos"></tbody></table></div>
-    </div>
-
-    <div id="mermas" class="section">
-        <div class="d-flex justify-content-between mb-4"><h2>Control de Mermas</h2><button class="btn btn-nova" onclick="openMod('merma')">+ Registrar Merma</button></div>
-        <div class="card-nova"><table class="table"><thead><tr><th>Fecha</th><th>Responsable</th><th>Uds</th><th>Pérdida $</th><th>Acción</th></tr></thead><tbody id="list-mermas"></tbody></table></div>
-    </div>
-
-</div>
-
-<div class="modal fade" id="modalNova" tabindex="-1"><div class="modal-dialog modal-dialog-centered"><div class="modal-content bg-dark border-secondary"><div class="modal-header border-secondary text-white"><h5 id="m-title">Registro</h5><button class="btn-close btn-close-white" data-bs-dismiss="modal"></button></div><div class="modal-body" id="m-body"></div><div class="modal-footer border-secondary"><button class="btn btn-nova w-100" onclick="processSave()">Guardar en NOVA</button></div></div></div></div>
-
-<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-<script>
-    let novaData = JSON.parse(localStorage.getItem('nova_final_app')) || { 
-        user: "Carlos Nova", ventas: [], insumos: [], gastos: [], mermas: [] 
-    };
-    let currentType = "";
-
-    function show(id) {
-        document.querySelectorAll('.section').forEach(s => s.classList.remove('active'));
-        document.querySelectorAll('.nav-link').forEach(l => l.classList.remove('active'));
-        document.getElementById(id).classList.add('active');
-        event.currentTarget.classList.add('active');
-        render();
-    }
-
-    function cambiarUser() { let n = prompt("Nombre del responsable:"); if(n) { novaData.user = n; update(); } }
-
-    function openMod(t) {
-        currentType = t;
-        const b = document.getElementById('m-body');
-        const h = document.getElementById('m-title');
-        b.innerHTML = "";
-        
-        if(t === 'venta') {
-            h.innerText = "Registrar Venta";
-            b.innerHTML = `<input type="text" id="i1" class="form-control mb-3" placeholder="Nombre Cliente">
-                           <input type="number" id="i2" class="form-control mb-3" placeholder="Monto COP $">
-                           <select id="i3" class="form-select"><option>Pagado</option><option>Pendiente</option></select>`;
-        } else if(t === 'insumo') {
-            h.innerText = "Nuevo Insumo";
-            b.innerHTML = `<input type="text" id="i1" class="form-control mb-3" placeholder="Ej: Harina de Trigo">
-                           <div class="input-group mb-3"><input type="number" id="i2" class="form-control" placeholder="Cantidad"><select id="i3" class="form-select"><option>Kg</option><option>Litros</option></select></div>
-                           <input type="number" id="i4" class="form-control" placeholder="Stock Mínimo (Alerta)">`;
-        } else if(t === 'gasto') {
-            h.innerText = "Gasto Fijo";
-            b.innerHTML = `<input type="text" id="i1" class="form-control mb-3" placeholder="Descripción (Renta, Luz...)">
-                           <input type="number" id="i2" class="form-control" placeholder="Monto COP $">`;
-        } else if(t === 'merma') {
-            h.innerText = "Registrar Merma";
-            b.innerHTML = `<input type="number" id="i1" class="form-control mb-3" placeholder="Unidades Perdidas">
-                           <input type="number" id="i2" class="form-control" placeholder="Costo de pérdida $">`;
-        }
-        new bootstrap.Modal('#modalNova').show();
-    }
-
-    function processSave() {
-        const v1 = document.getElementById('i1').value;
-        const v2 = document.getElementById('i2').value;
-        const v3 = document.getElementById('i3')?.value || "";
-        const v4 = document.getElementById('i4')?.value || "";
-
-        if(!v1 || !v2) return alert("Completa los datos");
-
-        const obj = { id: Date.now(), fecha: new Date().toLocaleDateString(), user: novaData.user, v1, v2: parseFloat(v2), v3, v4: parseFloat(v4) };
-        novaData[currentType + 's'].push(obj);
-        update();
-        bootstrap.Modal.getInstance('#modalNova').hide();
-    }
-
-    function remove(t, id) { if(confirm("¿Borrar registro?")) { novaData[t] = novaData[t].filter(x => x.id !== id); update(); } }
-    function update() { localStorage.setItem('nova_final_app', JSON.stringify(novaData)); render(); }
-    function fmt(v) { return new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(v); }
-
-    function render() {
-        document.getElementById('resp-name').innerText = novaData.user;
-        let vTot = 0, gTot = 0, dTot = 0, mTot = 0;
-
-        // Render Ventas
-        const listV = document.getElementById('list-ventas'); listV.innerHTML = "";
-        novaData.ventas.forEach(v => {
-            vTot += v.v2; if(v.v3 === 'Pendiente') dTot += v.v2;
-            listV.innerHTML += `<tr><td>${v.fecha}</td><td>${v.user}</td><td>${v.v1}</td><td>${fmt(v.v2)}</td><td><span class="badge-status ${v.v3==='Pagado'?'bg-success text-white':'bg-danger text-white'}">${v.v3}</span></td><td><i class="bi bi-trash text-muted" onclick="remove('ventas', ${v.id})"></i></td></tr>`;
-        });
-
-        // Render Gastos
-        const listG = document.getElementById('list-gastos'); listG.innerHTML = "";
-        novaData.gastos.forEach(g => {
-            gTot += g.v2;
-            listG.innerHTML += `<tr><td>${g.v1}</td><td>${g.user}</td><td>${fmt(g.v2)}</td><td><i class="bi bi-trash text-muted" onclick="remove('gastos', ${g.id})"></i></td></tr>`;
-        });
-
-        // Render Mermas
-        const listM = document.getElementById('list-mermas'); listM.innerHTML = "";
-        novaData.mermas.forEach(m => {
-            mTot += m.v2;
-            listM.innerHTML += `<tr><td>${m.fecha}</td><td>${m.user}</td><td>${m.v1} uds</td><td>${fmt(m.v2)}</td><td><i class="bi bi-trash text-muted" onclick="remove('mermas', ${m.id})"></i></td></tr>`;
-        });
-
-        // Render Insumos & Alertas
-        const listI = document.getElementById('list-insumos'); listI.innerHTML = "";
-        const alBox = document.getElementById('alertas-stock'); alBox.innerHTML = "";
-        novaData.insumos.forEach(i => {
-            if(i.v2 <= i.v4) alBox.innerHTML += `<div class="text-danger mb-1"><i class="bi bi-exclamation-triangle"></i> Falta comprar ${i.v1}</div>`;
-            listI.innerHTML += `<div class="col-md-4"><div class="card-nova"><h6>${i.v1}</h6><p class="mb-0 text-primary">${i.v2} ${i.v3}</p><small class="text-muted">Mín: ${i.v4}</small><br><button class="btn btn-sm btn-link text-danger p-0 mt-2" onclick="remove('insumos', ${i.id})">Eliminar</button></div></div>`;
-        });
-
-        // Totales Dashboard
-        document.getElementById('s-ingresos').innerText = fmt(vTot);
-        document.getElementById('s-gastos').innerText = fmt(gTot + mTot);
-        document.getElementById('s-deuda').innerText = fmt(dTot);
-        document.getElementById('s-utilidad').innerText = fmt(vTot - (
+            </div>`;
+    });
+}
