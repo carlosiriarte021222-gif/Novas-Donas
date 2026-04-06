@@ -3,7 +3,7 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>DONAS NOVA 🍩</title>
+<title>DONAS NOVA</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
@@ -14,14 +14,18 @@
 body { background:var(--bg); color:#fff; }
 
 .sidebar { width:260px; height:100vh; position:fixed; background:#111; padding:20px; }
-.nav-link { cursor:pointer; padding:10px; border-radius:10px; }
+
+.nav-link { cursor:pointer; padding:10px; border-radius:10px; color:#fff; }
 .nav-link.active, .nav-link:hover { background:var(--primary); color:#000; }
 
 .main { margin-left:260px; padding:30px; }
 
 .card-nova { background:var(--card); padding:20px; border-radius:15px; margin-bottom:15px; }
 
-.btn-nova { background:var(--primary); font-weight:bold; border:none; }
+.btn-nova { background:var(--primary); border:none; font-weight:bold; }
+
+.section { display:none; }
+.section.active { display:block; }
 
 @media(max-width:768px){
 .sidebar{position:relative;width:100%;height:auto;}
@@ -33,7 +37,7 @@ body { background:var(--bg); color:#fff; }
 <body>
 
 <div class="sidebar">
-<h2>🍩 DONAS NOVA</h2>
+<h3>🍩 DONAS NOVA</h3>
 
 <div class="nav-link active" onclick="ver('dash',this)">Dashboard</div>
 <div class="nav-link" onclick="ver('ventas',this)">Ventas</div>
@@ -47,14 +51,14 @@ body { background:var(--bg); color:#fff; }
 
 <!-- DASH -->
 <div id="dash" class="section active">
-<h3>Resumen Diario</h3>
+<h4>Resumen Diario</h4>
 
 <input type="date" id="filtroFecha" class="form-control mb-3" onchange="render()">
 
 <div class="row">
-<div class="col-md-4"><div class="card-nova"><h5>Ventas Día</h5><h3 id="vDia">$0</h3></div></div>
-<div class="col-md-4"><div class="card-nova"><h5>Gastos Día</h5><h3 id="gDia">$0</h3></div></div>
-<div class="col-md-4"><div class="card-nova"><h5>Ganancia</h5><h3 id="uDia">$0</h3></div></div>
+<div class="col-md-4"><div class="card-nova"><h6>Ventas</h6><h3 id="vDia">$0</h3></div></div>
+<div class="col-md-4"><div class="card-nova"><h6>Gastos</h6><h3 id="gDia">$0</h3></div></div>
+<div class="col-md-4"><div class="card-nova"><h6>Ganancia</h6><h3 id="uDia">$0</h3></div></div>
 </div>
 
 <canvas id="chart"></canvas>
@@ -62,8 +66,8 @@ body { background:var(--bg); color:#fff; }
 
 <!-- VENTAS -->
 <div id="ventas" class="section">
-<h3>Ventas</h3>
-<button onclick="pop('venta')" class="btn btn-nova mb-2">Nueva</button>
+<h4>Ventas</h4>
+<button onclick="pop('venta')" class="btn btn-nova mb-2">Nueva Venta</button>
 
 <table class="table table-dark">
 <thead>
@@ -75,8 +79,8 @@ body { background:var(--bg); color:#fff; }
 
 <!-- GASTOS -->
 <div id="gastos" class="section">
-<h3>Gastos</h3>
-<button onclick="pop('gasto')" class="btn btn-nova mb-2">Nuevo</button>
+<h4>Gastos</h4>
+<button onclick="pop('gasto')" class="btn btn-nova mb-2">Nuevo Gasto</button>
 
 <table class="table table-dark">
 <thead>
@@ -107,9 +111,8 @@ body { background:var(--bg); color:#fff; }
 
 let db = JSON.parse(localStorage.getItem('NOVA_DB')) || {user:"Admin",ventas:[],gastos:[]};
 let tipo="";
-let modal=new bootstrap.Modal(document.getElementById('modalNova'));
+let modal = new bootstrap.Modal(document.getElementById('modalNova'));
 let chart=null;
-let guardando=false;
 
 // navegación
 function ver(id,el){
@@ -122,10 +125,8 @@ render();
 
 // usuario
 function cambiarUser(){
-let n=prompt("Nombre");
-if(!n || n.trim()==="") return;
-db.user=n.trim();
-save();
+let n = prompt("Nombre:");
+if(n){ db.user=n; save(); }
 }
 
 // modal
@@ -162,8 +163,6 @@ modal.show();
 
 // guardar
 function guardar(){
-if(guardando) return;
-guardando=true;
 
 let d1=document.getElementById('f1').value;
 let d2=parseFloat(document.getElementById('f2').value);
@@ -171,10 +170,7 @@ let d3=document.getElementById('f3')?.value || "";
 let ruta=document.getElementById('f4')?.value || "";
 let fecha=document.getElementById('f5')?.value || new Date().toISOString().split('T')[0];
 
-if(!d1 || isNaN(d2) || d2<=0){
-guardando=false;
-return alert("Datos inválidos");
-}
+if(!d1 || isNaN(d2)) return alert("Completa datos");
 
 if(tipo==="venta"){
 db.ventas.push({id:Date.now(),cliente:d1,ruta,monto:d2,estado:d3,fecha});
@@ -186,15 +182,14 @@ db.gastos.push({id:Date.now(),concepto:d1,monto:d2,fecha});
 
 save();
 modal.hide();
-
-setTimeout(()=>guardando=false,300);
 }
 
 // borrar
 function borrar(t,id){
-if(!confirm("¿Eliminar registro?")) return;
+if(confirm("Eliminar?")){
 db[t]=db[t].filter(x=>x.id!==id);
 save();
+}
 }
 
 // guardar local
@@ -215,32 +210,33 @@ document.getElementById('user-tag').innerText=db.user;
 
 let fechaFiltro=document.getElementById('filtroFecha')?.value;
 
-let vDia=0,gDia=0;
+let vDia=0, gDia=0;
 
 // ventas
-let tv=document.getElementById('tab-ventas'); tv.innerHTML="";
-db.ventas.forEach(x=>{
+let tv=document.getElementById('tab-ventas');
+tv.innerHTML="";
 
+db.ventas.forEach(x=>{
 if(!fechaFiltro || x.fecha===fechaFiltro){
 vDia+=x.monto;
 
 tv.innerHTML+=`
 <tr>
 <td>${x.cliente}</td>
-<td>${x.ruta||'-'}</td>
+<td>${x.ruta || '-'}</td>
 <td>${format(x.monto)}</td>
 <td>${x.estado}</td>
 <td>${x.fecha}</td>
 <td><button class="btn btn-sm btn-danger" onclick="borrar('ventas',${x.id})">X</button></td>
 </tr>`;
 }
-
 });
 
 // gastos
-let tg=document.getElementById('tab-gastos'); tg.innerHTML="";
-db.gastos.forEach(x=>{
+let tg=document.getElementById('tab-gastos');
+tg.innerHTML="";
 
+db.gastos.forEach(x=>{
 if(!fechaFiltro || x.fecha===fechaFiltro){
 gDia+=x.monto;
 
@@ -252,7 +248,6 @@ tg.innerHTML+=`
 <td><button class="btn btn-sm btn-danger" onclick="borrar('gastos',${x.id})">X</button></td>
 </tr>`;
 }
-
 });
 
 // totales
@@ -260,17 +255,20 @@ document.getElementById('vDia').innerText=format(vDia);
 document.getElementById('gDia').innerText=format(gDia);
 document.getElementById('uDia').innerText=format(vDia-gDia);
 
-// gráfica
-let ctx=document.getElementById('chart');
+// gráfica segura
+let canvas = document.getElementById('chart');
+if(canvas){
 if(chart) chart.destroy();
 
-chart=new Chart(ctx,{
+chart = new Chart(canvas,{
 type:'bar',
 data:{
 labels:["Ventas","Gastos","Ganancia"],
 datasets:[{data:[vDia,gDia,vDia-gDia]}]
 }
 });
+}
+
 }
 
 render();
