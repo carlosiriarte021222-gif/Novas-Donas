@@ -3,26 +3,23 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
-<title>NOVA PRO - Sistema Profesional</title>
+<title>DONAS NOVA 🍩</title>
 
 <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css" rel="stylesheet">
 <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
 <style>
-:root { --primary:#ffce00; --bg:#000; --card:#1a1a1a; --text:#fff; }
+:root { --primary:#ffce00; --bg:#000; --card:#1a1a1a; }
 
-body { background:var(--bg); color:var(--text); margin:0; }
+body { background:var(--bg); color:#fff; }
 
-.sidebar { width:260px; height:100vh; background:#111; position:fixed; padding:25px; }
-.nav-link { color:#fff; padding:12px; border-radius:12px; cursor:pointer; user-select:none; }
+.sidebar { width:260px; height:100vh; position:fixed; background:#111; padding:20px; }
+.nav-link { cursor:pointer; padding:10px; border-radius:10px; }
 .nav-link.active, .nav-link:hover { background:var(--primary); color:#000; }
 
 .main { margin-left:260px; padding:30px; }
 
-.section { display:none; }
-.section.active { display:block; }
-
-.card-nova { background:var(--card); padding:20px; border-radius:15px; }
+.card-nova { background:var(--card); padding:20px; border-radius:15px; margin-bottom:15px; }
 
 .btn-nova { background:var(--primary); font-weight:bold; border:none; }
 
@@ -36,66 +33,54 @@ body { background:var(--bg); color:var(--text); margin:0; }
 <body>
 
 <div class="sidebar">
-<h3>NOVA PRO</h3>
+<h2>🍩 DONAS NOVA</h2>
 
-<div class="nav-link active" onclick="ver('dash', this)">Dashboard</div>
-<div class="nav-link" onclick="ver('ventas', this)">Ventas</div>
-<div class="nav-link" onclick="ver('gastos', this)">Gastos</div>
-<div class="nav-link" onclick="ver('inventario', this)">Inventario</div>
-<div class="nav-link" onclick="ver('mermas', this)">Mermas</div>
+<div class="nav-link active" onclick="ver('dash',this)">Dashboard</div>
+<div class="nav-link" onclick="ver('ventas',this)">Ventas</div>
+<div class="nav-link" onclick="ver('gastos',this)">Gastos</div>
 
 <hr>
-<div onclick="cambiarUser()" id="user-tag">Admin</div>
+<div onclick="cambiarUser()">👤 <span id="user-tag">Admin</span></div>
 </div>
 
 <div class="main">
 
+<!-- DASH -->
 <div id="dash" class="section active">
-<h2>Dashboard</h2>
 
-<div class="row">
-<div class="col-md-4"><div class="card-nova"><h5>Ingresos</h5><h3 id="ing">$0</h3></div></div>
-<div class="col-md-4"><div class="card-nova"><h5>Gastos</h5><h3 id="gas">$0</h3></div></div>
-<div class="col-md-4"><div class="card-nova"><h5>Utilidad</h5><h3 id="util">$0</h3></div></div>
-</div>
+<h3>Resumen Diario</h3>
 
-<div class="mt-4">
-<div class="progress">
-<div id="barra" class="progress-bar bg-warning" style="width:0%">0%</div>
-</div>
-<p id="msg"></p>
+<input type="date" id="filtroFecha" onchange="render()">
+
+<div class="row mt-3">
+<div class="col-md-4"><div class="card-nova"><h5>Ventas Día</h5><h3 id="vDia">$0</h3></div></div>
+<div class="col-md-4"><div class="card-nova"><h5>Gastos Día</h5><h3 id="gDia">$0</h3></div></div>
+<div class="col-md-4"><div class="card-nova"><h5>Ganancia Día</h5><h3 id="uDia">$0</h3></div></div>
 </div>
 
 <canvas id="chart"></canvas>
+
 </div>
 
+<!-- VENTAS -->
 <div id="ventas" class="section">
 <h3>Ventas</h3>
-<button onclick="pop('venta')" class="btn btn-nova mb-2">Nueva</button>
+<button onclick="pop('venta')" class="btn btn-nova mb-2">Nueva Venta</button>
+
 <table class="table table-dark">
+<thead><tr><th>Cliente</th><th>Ruta</th><th>Monto</th><th>Estado</th><th>Fecha</th></tr></thead>
 <tbody id="tab-ventas"></tbody>
 </table>
 </div>
 
+<!-- GASTOS -->
 <div id="gastos" class="section">
 <h3>Gastos</h3>
 <button onclick="pop('gasto')" class="btn btn-nova mb-2">Nuevo</button>
+
 <table class="table table-dark">
+<thead><tr><th>Concepto</th><th>Monto</th><th>Fecha</th></tr></thead>
 <tbody id="tab-gastos"></tbody>
-</table>
-</div>
-
-<div id="inventario" class="section">
-<h3>Inventario</h3>
-<button onclick="pop('insumo')" class="btn btn-nova mb-2">Nuevo</button>
-<div id="tab-insumos" class="row"></div>
-</div>
-
-<div id="mermas" class="section">
-<h3>Mermas</h3>
-<button onclick="pop('merma')" class="btn btn-nova mb-2">Nuevo</button>
-<table class="table table-dark">
-<tbody id="tab-mermas"></tbody>
 </table>
 </div>
 
@@ -104,9 +89,11 @@ body { background:var(--bg); color:var(--text); margin:0; }
 <!-- MODAL -->
 <div class="modal fade" id="modalNova">
 <div class="modal-dialog">
-<div class="modal-content bg-dark text-white p-3">
+<div class="modal-content bg-dark p-3">
+
 <div id="m-body"></div>
-<button onclick="guardar()" class="btn btn-nova mt-3" data-bs-dismiss="modal">Guardar</button>
+<button onclick="guardar()" class="btn btn-nova mt-2" data-bs-dismiss="modal">Guardar</button>
+
 </div>
 </div>
 </div>
@@ -115,13 +102,11 @@ body { background:var(--bg); color:var(--text); margin:0; }
 
 <script>
 
-let db = JSON.parse(localStorage.getItem('NOVA_DB')) || {user:"Admin",ventas:[],gastos:[],insumos:[],mermas:[]};
+let db = JSON.parse(localStorage.getItem('NOVA_DB')) || {user:"Admin",ventas:[],gastos:[]};
 let tipo="";
 let modal=new bootstrap.Modal(document.getElementById('modalNova'));
 let chart=null;
-let guardando=false;
 
-// navegación
 function ver(id,el){
 document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
 document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
@@ -130,142 +115,124 @@ el.classList.add('active');
 render();
 }
 
-// usuario
 function cambiarUser(){
 let n=prompt("Nombre");
-if(!n || n.trim()==="") return;
-db.user=n.trim();
+if(n) db.user=n;
 save();
 }
 
-// modal
 function pop(t){
 tipo=t;
 let b=document.getElementById('m-body');
 
 if(t==="venta"){
-b.innerHTML=`<input id="f1" class="form-control mb-2" placeholder="Cliente">
-<input id="f2" class="form-control mb-2" type="number" placeholder="Monto">
-<select id="f3" class="form-control"><option>Pagado</option><option>Pendiente</option></select>`;
+b.innerHTML=`
+<input id="f1" class="form-control mb-2" placeholder="Cliente">
+<input id="f2" class="form-control mb-2" placeholder="Ruta">
+<input id="f3" type="number" class="form-control mb-2" placeholder="Monto">
+<select id="f4" class="form-control mb-2"><option>Pagado</option><option>Pendiente</option></select>
+<input id="f5" type="date" class="form-control">
+`;
 }
 
 if(t==="gasto"){
-b.innerHTML=`<input id="f1" class="form-control mb-2" placeholder="Concepto">
-<input id="f2" class="form-control" type="number" placeholder="Monto">`;
-}
-
-if(t==="insumo"){
-b.innerHTML=`<input id="f1" class="form-control mb-2" placeholder="Insumo">
-<input id="f2" class="form-control mb-2" type="number" placeholder="Cantidad">
-<select id="f3" class="form-control"><option>Kg</option><option>Litros</option></select>`;
-}
-
-if(t==="merma"){
-b.innerHTML=`<input id="f1" class="form-control mb-2" type="number" placeholder="Cantidad">
-<input id="f2" class="form-control" type="number" placeholder="Pérdida">`;
+b.innerHTML=`
+<input id="f1" class="form-control mb-2" placeholder="Concepto">
+<input id="f2" type="number" class="form-control mb-2" placeholder="Monto">
+<input id="f3" type="date" class="form-control">
+`;
 }
 
 modal.show();
 }
 
-// guardar
 function guardar(){
-if(guardando) return;
-guardando=true;
 
-let d1=document.getElementById('f1').value;
-let d2=parseFloat(document.getElementById('f2').value);
-let d3=document.getElementById('f3')?.value || "";
+if(tipo==="venta"){
+let cliente=f1.value;
+let ruta=f2.value;
+let monto=parseFloat(f3.value);
+let estado=f4.value;
+let fecha=f5.value;
 
-if(!d1 || isNaN(d2) || d2<=0){
-guardando=false;
-return alert("Datos inválidos");
+if(!cliente||!ruta||isNaN(monto)) return alert("Datos inválidos");
+
+db.ventas.push({cliente,ruta,monto,estado,fecha});
 }
 
-db[tipo+"s"].push({id:Date.now(),user:db.user,d1,d2,d3});
+if(tipo==="gasto"){
+let concepto=f1.value;
+let monto=parseFloat(f2.value);
+let fecha=f3.value;
+
+if(!concepto||isNaN(monto)) return alert("Datos inválidos");
+
+db.gastos.push({concepto,monto,fecha});
+}
+
 save();
-
-setTimeout(()=>guardando=false,300);
 }
 
-// borrar
-function borrar(t,id){
-if(!confirm("¿Seguro que deseas eliminar?")) return;
-db[t]=db[t].filter(x=>x.id!==id);
-save();
-}
-
-// guardar local
 function save(){
 localStorage.setItem('NOVA_DB',JSON.stringify(db));
 render();
 }
 
-// formato moneda
 function format(n){
 return new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP'}).format(n);
 }
 
-// render principal
 function render(){
 
 document.getElementById('user-tag').innerText=db.user;
 
-let vT=0,gT=0,mT=0;
+let fechaFiltro=document.getElementById('filtroFecha').value;
 
-// ventas
+let vDia=0,gDia=0;
+
 let tv=document.getElementById('tab-ventas'); tv.innerHTML="";
-db.ventas.forEach(x=>{
-vT+=x.d2;
-tv.innerHTML+=`<tr><td>${x.d1}</td><td>${format(x.d2)}</td><td>${x.d3}</td><td><button class="btn btn-sm btn-danger" onclick="borrar('ventas',${x.id})">X</button></td></tr>`;
+db.ventas.forEach(v=>{
+
+if(!fechaFiltro || v.fecha===fechaFiltro){
+vDia+=v.monto;
+}
+
+tv.innerHTML+=`<tr>
+<td>${v.cliente}</td>
+<td>${v.ruta}</td>
+<td>${format(v.monto)}</td>
+<td><span class="badge ${v.estado==='Pagado'?'bg-success':'bg-warning'}">${v.estado}</span></td>
+<td>${v.fecha}</td>
+</tr>`;
 });
 
-// gastos
 let tg=document.getElementById('tab-gastos'); tg.innerHTML="";
-db.gastos.forEach(x=>{
-gT+=x.d2;
-tg.innerHTML+=`<tr><td>${x.d1}</td><td>${format(x.d2)}</td><td><button class="btn btn-sm btn-danger" onclick="borrar('gastos',${x.id})">X</button></td></tr>`;
+db.gastos.forEach(g=>{
+
+if(!fechaFiltro || g.fecha===fechaFiltro){
+gDia+=g.monto;
+}
+
+tg.innerHTML+=`<tr>
+<td>${g.concepto}</td>
+<td>${format(g.monto)}</td>
+<td>${g.fecha}</td>
+</tr>`;
 });
 
-// mermas
-let tm=document.getElementById('tab-mermas'); tm.innerHTML="";
-db.mermas.forEach(x=>{
-mT+=x.d2;
-tm.innerHTML+=`<tr><td>${x.d1}</td><td>${format(x.d2)}</td><td><button class="btn btn-sm btn-danger" onclick="borrar('mermas',${x.id})">X</button></td></tr>`;
-});
-
-// inventario
-let ti=document.getElementById('tab-insumos'); ti.innerHTML="";
-db.insumos.forEach(x=>{
-ti.innerHTML+=`<div class="col-md-3"><div class="card-nova text-center">
-<b>${x.d1}</b><br>${x.d2} ${x.d3}<br>
-<button class="btn btn-sm btn-danger mt-2" onclick="borrar('insumos',${x.id})">Eliminar</button>
-</div></div>`;
-});
-
-// dashboard
-document.getElementById('ing').innerText=format(vT);
-document.getElementById('gas').innerText=format(gT+mT);
-document.getElementById('util').innerText=format(vT-(gT+mT));
-
-// punto equilibrio
-let total=gT+mT;
-let porc= total>0 ? (vT/total)*100 : 0;
-porc=Math.min(porc,100);
-
-document.getElementById('barra').style.width=porc+"%";
-document.getElementById('barra').innerText=Math.round(porc)+"%";
-document.getElementById('msg').innerText=porc>=100?"Ganando dinero":"Aún no cubres costos";
+document.getElementById('vDia').innerText=format(vDia);
+document.getElementById('gDia').innerText=format(gDia);
+document.getElementById('uDia').innerText=format(vDia-gDia);
 
 // grafica
 let ctx=document.getElementById('chart');
 if(chart) chart.destroy();
 
 chart=new Chart(ctx,{
-type:'doughnut',
+type:'bar',
 data:{
-labels:["Ventas","Gastos"],
-datasets:[{data:[vT,total]}]
+labels:["Ventas","Gastos","Ganancia"],
+datasets:[{data:[vDia,gDia,vDia-gDia]}]
 }
 });
 }
