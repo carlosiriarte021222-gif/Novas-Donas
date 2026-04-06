@@ -47,28 +47,28 @@ body { background:var(--bg); color:#fff; }
 
 <!-- DASH -->
 <div id="dash" class="section active">
-
 <h3>Resumen Diario</h3>
 
-<input type="date" id="filtroFecha" onchange="render()">
+<input type="date" id="filtroFecha" class="form-control mb-3" onchange="render()">
 
-<div class="row mt-3">
+<div class="row">
 <div class="col-md-4"><div class="card-nova"><h5>Ventas Día</h5><h3 id="vDia">$0</h3></div></div>
 <div class="col-md-4"><div class="card-nova"><h5>Gastos Día</h5><h3 id="gDia">$0</h3></div></div>
-<div class="col-md-4"><div class="card-nova"><h5>Ganancia Día</h5><h3 id="uDia">$0</h3></div></div>
+<div class="col-md-4"><div class="card-nova"><h5>Ganancia</h5><h3 id="uDia">$0</h3></div></div>
 </div>
 
 <canvas id="chart"></canvas>
-
 </div>
 
 <!-- VENTAS -->
 <div id="ventas" class="section">
 <h3>Ventas</h3>
-<button onclick="pop('venta')" class="btn btn-nova mb-2">Nueva Venta</button>
+<button onclick="pop('venta')" class="btn btn-nova mb-2">Nueva</button>
 
 <table class="table table-dark">
-<thead><tr><th>Cliente</th><th>Ruta</th><th>Monto</th><th>Estado</th><th>Fecha</th></tr></thead>
+<thead>
+<tr><th>Cliente</th><th>Ruta</th><th>Monto</th><th>Estado</th><th>Fecha</th><th></th></tr>
+</thead>
 <tbody id="tab-ventas"></tbody>
 </table>
 </div>
@@ -79,7 +79,9 @@ body { background:var(--bg); color:#fff; }
 <button onclick="pop('gasto')" class="btn btn-nova mb-2">Nuevo</button>
 
 <table class="table table-dark">
-<thead><tr><th>Concepto</th><th>Monto</th><th>Fecha</th></tr></thead>
+<thead>
+<tr><th>Concepto</th><th>Monto</th><th>Fecha</th><th></th></tr>
+</thead>
 <tbody id="tab-gastos"></tbody>
 </table>
 </div>
@@ -92,7 +94,8 @@ body { background:var(--bg); color:#fff; }
 <div class="modal-content bg-dark p-3">
 
 <div id="m-body"></div>
-<button onclick="guardar()" class="btn btn-nova mt-2" data-bs-dismiss="modal">Guardar</button>
+
+<button onclick="guardar()" class="btn btn-nova mt-2">Guardar</button>
 
 </div>
 </div>
@@ -106,7 +109,9 @@ let db = JSON.parse(localStorage.getItem('NOVA_DB')) || {user:"Admin",ventas:[],
 let tipo="";
 let modal=new bootstrap.Modal(document.getElementById('modalNova'));
 let chart=null;
+let guardando=false;
 
+// navegación
 function ver(id,el){
 document.querySelectorAll('.section').forEach(s=>s.classList.remove('active'));
 document.querySelectorAll('.nav-link').forEach(l=>l.classList.remove('active'));
@@ -115,116 +120,147 @@ el.classList.add('active');
 render();
 }
 
+// usuario
 function cambiarUser(){
 let n=prompt("Nombre");
-if(n) db.user=n;
+if(!n || n.trim()==="") return;
+db.user=n.trim();
 save();
 }
 
+// modal
 function pop(t){
 tipo=t;
 let b=document.getElementById('m-body');
+b.innerHTML="";
 
+// venta
 if(t==="venta"){
 b.innerHTML=`
 <input id="f1" class="form-control mb-2" placeholder="Cliente">
-<input id="f2" class="form-control mb-2" placeholder="Ruta">
-<input id="f3" type="number" class="form-control mb-2" placeholder="Monto">
-<select id="f4" class="form-control mb-2"><option>Pagado</option><option>Pendiente</option></select>
+<input id="f4" class="form-control mb-2" placeholder="Ruta">
+<input id="f2" type="number" class="form-control mb-2" placeholder="Monto">
+<select id="f3" class="form-control mb-2">
+<option>Pagado</option>
+<option>Pendiente</option>
+</select>
 <input id="f5" type="date" class="form-control">
 `;
 }
 
+// gasto
 if(t==="gasto"){
 b.innerHTML=`
 <input id="f1" class="form-control mb-2" placeholder="Concepto">
 <input id="f2" type="number" class="form-control mb-2" placeholder="Monto">
-<input id="f3" type="date" class="form-control">
+<input id="f5" type="date" class="form-control">
 `;
 }
 
 modal.show();
 }
 
+// guardar
 function guardar(){
+if(guardando) return;
+guardando=true;
+
+let d1=document.getElementById('f1').value;
+let d2=parseFloat(document.getElementById('f2').value);
+let d3=document.getElementById('f3')?.value || "";
+let ruta=document.getElementById('f4')?.value || "";
+let fecha=document.getElementById('f5')?.value || new Date().toISOString().split('T')[0];
+
+if(!d1 || isNaN(d2) || d2<=0){
+guardando=false;
+return alert("Datos inválidos");
+}
 
 if(tipo==="venta"){
-let cliente=f1.value;
-let ruta=f2.value;
-let monto=parseFloat(f3.value);
-let estado=f4.value;
-let fecha=f5.value;
-
-if(!cliente||!ruta||isNaN(monto)) return alert("Datos inválidos");
-
-db.ventas.push({cliente,ruta,monto,estado,fecha});
+db.ventas.push({id:Date.now(),cliente:d1,ruta,monto:d2,estado:d3,fecha});
 }
 
 if(tipo==="gasto"){
-let concepto=f1.value;
-let monto=parseFloat(f2.value);
-let fecha=f3.value;
-
-if(!concepto||isNaN(monto)) return alert("Datos inválidos");
-
-db.gastos.push({concepto,monto,fecha});
+db.gastos.push({id:Date.now(),concepto:d1,monto:d2,fecha});
 }
 
 save();
+modal.hide();
+
+setTimeout(()=>guardando=false,300);
 }
 
+// borrar
+function borrar(t,id){
+if(!confirm("¿Eliminar registro?")) return;
+db[t]=db[t].filter(x=>x.id!==id);
+save();
+}
+
+// guardar local
 function save(){
 localStorage.setItem('NOVA_DB',JSON.stringify(db));
 render();
 }
 
+// formato
 function format(n){
 return new Intl.NumberFormat('es-CO',{style:'currency',currency:'COP'}).format(n);
 }
 
+// render
 function render(){
 
 document.getElementById('user-tag').innerText=db.user;
 
-let fechaFiltro=document.getElementById('filtroFecha').value;
+let fechaFiltro=document.getElementById('filtroFecha')?.value;
 
 let vDia=0,gDia=0;
 
+// ventas
 let tv=document.getElementById('tab-ventas'); tv.innerHTML="";
-db.ventas.forEach(v=>{
+db.ventas.forEach(x=>{
 
-if(!fechaFiltro || v.fecha===fechaFiltro){
-vDia+=v.monto;
+if(!fechaFiltro || x.fecha===fechaFiltro){
+vDia+=x.monto;
+
+tv.innerHTML+=`
+<tr>
+<td>${x.cliente}</td>
+<td>${x.ruta||'-'}</td>
+<td>${format(x.monto)}</td>
+<td>${x.estado}</td>
+<td>${x.fecha}</td>
+<td><button class="btn btn-sm btn-danger" onclick="borrar('ventas',${x.id})">X</button></td>
+</tr>`;
 }
 
-tv.innerHTML+=`<tr>
-<td>${v.cliente}</td>
-<td>${v.ruta}</td>
-<td>${format(v.monto)}</td>
-<td><span class="badge ${v.estado==='Pagado'?'bg-success':'bg-warning'}">${v.estado}</span></td>
-<td>${v.fecha}</td>
-</tr>`;
 });
 
+// gastos
 let tg=document.getElementById('tab-gastos'); tg.innerHTML="";
-db.gastos.forEach(g=>{
+db.gastos.forEach(x=>{
 
-if(!fechaFiltro || g.fecha===fechaFiltro){
-gDia+=g.monto;
+if(!fechaFiltro || x.fecha===fechaFiltro){
+gDia+=x.monto;
+
+tg.innerHTML+=`
+<tr>
+<td>${x.concepto}</td>
+<td>${format(x.monto)}</td>
+<td>${x.fecha}</td>
+<td><button class="btn btn-sm btn-danger" onclick="borrar('gastos',${x.id})">X</button></td>
+</tr>`;
 }
 
-tg.innerHTML+=`<tr>
-<td>${g.concepto}</td>
-<td>${format(g.monto)}</td>
-<td>${g.fecha}</td>
-</tr>`;
 });
 
+// totales
 document.getElementById('vDia').innerText=format(vDia);
 document.getElementById('gDia').innerText=format(gDia);
 document.getElementById('uDia').innerText=format(vDia-gDia);
 
-// grafica
+// gráfica
 let ctx=document.getElementById('chart');
 if(chart) chart.destroy();
 
