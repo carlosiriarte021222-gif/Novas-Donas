@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Pro - Logistics & Finance</title>
+    <title>Nova Pro - Control de Precio</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
@@ -24,68 +24,73 @@
             <div class="w-9 h-9 bg-rose-600 rounded-lg flex items-center justify-center shadow-lg">
                 <span class="text-white font-black text-xl">N</span>
             </div>
-            <h1 class="text-lg font-black tracking-tighter">NOVA LOGISTICS</h1>
+            <h1 class="text-lg font-black tracking-tighter uppercase">Nova Pro</h1>
         </div>
-        <div class="text-[10px] font-black text-slate-400">STOCK DISPONIBLE: <span id="nav-stock" class="text-rose-600">0</span></div>
+        <div class="text-[10px] font-black text-slate-400 uppercase">Stock: <span id="nav-stock" class="text-rose-600">0</span></div>
     </nav>
 
     <div class="max-w-4xl mx-auto p-4">
 
         <div id="main-menu" class="module-section active">
-            <div class="mb-6">
-                <h2 class="text-2xl font-black italic">Dashboard Operativo</h2>
-                <p class="text-slate-400 text-sm">Ingresos automáticos por ruta</p>
+            
+            <div class="glass-card border-2 border-rose-500 mb-6 bg-rose-50">
+                <label class="text-[10px] font-black text-rose-600 uppercase tracking-widest block mb-2">Precio Actual por Caja (COP)</label>
+                <div class="flex items-center space-x-3">
+                    <span class="text-2xl font-black text-rose-600">$</span>
+                    <input type="number" id="main-price-input" oninput="updatePrice(this.value)" class="bg-transparent text-3xl font-black text-rose-700 outline-none w-full" placeholder="48000">
+                </div>
             </div>
 
             <div class="glass-card bg-slate-900 text-white mb-6">
                 <div class="space-y-3 mb-6 border-b border-slate-800 pb-6">
                     <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-400 font-bold">(+) Ventas (Cajas Entregadas)</span>
+                        <span class="text-slate-400 font-bold">(+) Ventas por Ruta</span>
                         <span id="bal-sales" class="text-emerald-400 font-black">$ 0</span>
                     </div>
                     <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-400 font-bold">(-) Nómina Registrada</span>
+                        <span class="text-slate-400 font-bold">(-) Nómina</span>
                         <span id="bal-payroll" class="text-rose-400 font-black">$ 0</span>
                     </div>
                     <div class="flex justify-between items-center text-sm">
-                        <span class="text-slate-400 font-bold">(-) Gastos de Hoy</span>
+                        <span class="text-slate-400 font-bold">(-) Gastos</span>
                         <span id="bal-expenses" class="text-rose-400 font-black">$ 0</span>
                     </div>
                 </div>
                 <div class="flex justify-between items-center">
                     <div>
-                        <p class="text-[10px] font-black text-rose-500 uppercase tracking-widest">Utilidad Neta</p>
+                        <p class="text-[10px] font-black text-rose-500 uppercase">Utilidad Neta</p>
                         <h2 id="bal-total" class="text-3xl font-black">$ 0</h2>
                     </div>
-                    <div class="text-right text-[10px] font-bold text-slate-500 uppercase">
-                        Total Cajas: <span id="total-boxes-out" class="text-white">0</span>
+                    <div class="text-right">
+                        <span class="block text-[10px] text-slate-500 uppercase font-black">Cajas Totales</span>
+                        <span id="total-boxes-out" class="text-xl font-black">0</span>
                     </div>
                 </div>
             </div>
 
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <button onclick="showModule('module-inventory')" class="glass-card flex items-center space-x-4">
+                <button onclick="showModule('module-inventory')" class="glass-card flex items-center space-x-4 hover:bg-slate-50">
                     <div class="w-12 h-12 bg-blue-50 text-blue-500 rounded-2xl flex items-center justify-center"><i class="fas fa-plus"></i></div>
-                    <div class="text-left"><span class="block text-xs font-black uppercase">Cargar</span><span class="text-[10px] text-slate-400 font-bold">Producción</span></div>
+                    <div class="text-left font-black uppercase text-xs">Producción</div>
                 </button>
-                <button onclick="showModule('module-routes')" class="glass-card flex items-center space-x-4">
+                <button onclick="showModule('module-routes')" class="glass-card flex items-center space-x-4 hover:bg-slate-50">
                     <div class="w-12 h-12 bg-amber-50 text-amber-500 rounded-2xl flex items-center justify-center"><i class="fas fa-truck"></i></div>
-                    <div class="text-left"><span class="block text-xs font-black uppercase">Despacho</span><span class="text-[10px] text-slate-400 font-bold">Rutas & Ventas</span></div>
+                    <div class="text-left font-black uppercase text-xs">Rutas</div>
                 </button>
-                <button onclick="showModule('module-finance')" class="glass-card flex items-center space-x-4">
-                    <div class="w-12 h-12 bg-rose-50 text-rose-500 rounded-2xl flex items-center justify-center"><i class="fas fa-wallet"></i></div>
-                    <div class="text-left"><span class="block text-xs font-black uppercase">Pagos</span><span class="text-[10px] text-slate-400 font-bold">Nómina/Gastos</span></div>
+                <button onclick="showModule('module-finance')" class="glass-card flex items-center space-x-4 hover:bg-slate-50">
+                    <div class="w-12 h-12 bg-purple-50 text-purple-500 rounded-2xl flex items-center justify-center"><i class="fas fa-coins"></i></div>
+                    <div class="text-left font-black uppercase text-xs">Finanzas</div>
                 </button>
             </div>
         </div>
 
         <div id="module-inventory" class="module-section">
-            <button onclick="showModule('main-menu')" class="mb-4 text-xs font-bold text-slate-400 uppercase"><i class="fas fa-arrow-left mr-2"></i> Volver</button>
+            <button onclick="showModule('main-menu')" class="mb-4 text-xs font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
             <div class="glass-card text-center py-10">
-                <h3 class="text-xs font-black uppercase text-slate-400 mb-4">Ingresar Producción de Donas</h3>
+                <h3 class="text-xs font-black uppercase text-slate-400 mb-4">Stock en Bodega</h3>
                 <div id="display-stock" class="text-8xl font-black text-slate-900 mb-8">0</div>
                 <div class="flex gap-2 max-w-xs mx-auto">
-                    <input type="number" id="input-add-stock" class="input-nova text-center text-xl" placeholder="Cantidad">
+                    <input type="number" id="input-add-stock" class="input-nova text-center text-xl" placeholder="Cant.">
                     <button onclick="addStock()" class="bg-rose-600 text-white px-8 rounded-xl font-black uppercase text-xs">Cargar</button>
                 </div>
             </div>
@@ -93,27 +98,27 @@
 
         <div id="module-routes" class="module-section">
             <div class="flex justify-between items-center mb-6">
-                <button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase"><i class="fas fa-arrow-left mr-1"></i> Volver</button>
-                <button onclick="addRouteRow()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ AGREGAR PUNTO DE VENTA</button>
+                <button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase"><i class="fas fa-arrow-left"></i></button>
+                <button onclick="addRouteRow()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ NUEVA ENTREGA</button>
             </div>
             <div id="routes-container" class="space-y-4"></div>
         </div>
 
         <div id="module-finance" class="module-section">
-            <button onclick="showModule('main-menu')" class="mb-6 text-xs font-bold text-slate-400 uppercase block"><i class="fas fa-arrow-left mr-2"></i> Volver</button>
+            <button onclick="showModule('main-menu')" class="mb-6 text-xs font-bold text-slate-400 uppercase block"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
             
             <div class="glass-card mb-6 border-l-4 border-purple-500">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-black text-purple-600 uppercase text-xs">Registro de Nómina</h3>
-                    <button onclick="addPayrollRow()" class="text-[10px] font-black bg-purple-100 text-purple-600 px-3 py-1 rounded-full">+ PAGO TRABAJADOR</button>
+                    <h3 class="font-black text-purple-600 uppercase text-xs">Nómina</h3>
+                    <button onclick="addPayrollRow()" class="text-[10px] font-black bg-purple-100 text-purple-600 px-3 py-1 rounded-full">+ PAGO</button>
                 </div>
                 <div id="payroll-container" class="space-y-4"></div>
             </div>
 
             <div class="glass-card border-l-4 border-rose-500">
                 <div class="flex justify-between items-center mb-4">
-                    <h3 class="font-black text-rose-600 uppercase text-xs">Gastos Extras</h3>
-                    <button onclick="addExpenseRow()" class="text-[10px] font-black bg-rose-100 text-rose-600 px-3 py-1 rounded-full">+ REGISTRAR GASTO</button>
+                    <h3 class="font-black text-rose-600 uppercase text-xs">Gastos</h3>
+                    <button onclick="addExpenseRow()" class="text-[10px] font-black bg-rose-100 text-rose-600 px-3 py-1 rounded-full">+ GASTO</button>
                 </div>
                 <div id="expenses-container" class="space-y-4"></div>
             </div>
@@ -135,9 +140,15 @@
         function showModule(id) {
             document.querySelectorAll('.module-section').forEach(m => m.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
         }
 
+        // --- ACTUALIZACIÓN DE PRECIO ---
+        function updatePrice(val) {
+            db.price = parseInt(val) || 0;
+            saveSystem();
+        }
+
+        // --- PRODUCCIÓN ---
         function addStock() {
             const val = parseInt(document.getElementById('input-add-stock').value) || 0;
             db.initial_stock += val;
@@ -149,22 +160,21 @@
         function addRouteRow(data = null) {
             const container = document.getElementById('routes-container');
             const div = document.createElement('div');
-            div.className = "glass-card space-y-3 relative";
+            div.className = "glass-card space-y-3";
             const time = data ? data.time : getTimestamp();
             div.innerHTML = `
                 <div class="flex justify-between items-start">
                     <div class="flex-1">
-                        <input type="text" placeholder="Nombre Tienda" value="${data ? data.name : ''}" class="font-black text-sm outline-none bg-transparent w-full">
+                        <input type="text" placeholder="Tienda" value="${data ? data.name : ''}" class="font-black text-sm outline-none w-full bg-transparent">
                         <input type="text" placeholder="Dirección" value="${data ? data.addr : ''}" class="text-[10px] text-slate-400 outline-none w-full">
                     </div>
                     <span class="timestamp">${time}</span>
                 </div>
-                <div class="flex items-center gap-4">
+                <div class="flex items-center gap-3">
                     <div class="flex-1">
-                        <label class="text-[9px] font-black text-slate-400 uppercase">Cajas Entregadas</label>
-                        <input type="number" placeholder="0" value="${data ? data.qty : 0}" class="input-nova font-black text-rose-600 qty-input">
+                        <input type="number" placeholder="Cajas" value="${data ? data.qty : 0}" class="input-nova font-black text-rose-600 qty-input">
                     </div>
-                    <button onclick="secureDeleteRow(this, 'routes')" class="mt-4 text-slate-200"><i class="fas fa-trash-alt"></i></button>
+                    <button onclick="secureDeleteRow(this, 'routes')" class="text-slate-200"><i class="fas fa-trash-alt"></i></button>
                 </div>
             `;
             container.appendChild(div);
@@ -176,16 +186,13 @@
         function addPayrollRow(data = null) {
             const container = document.getElementById('payroll-container');
             const div = document.createElement('div');
-            div.className = "flex flex-col space-y-2 pb-4 border-b border-slate-50";
+            div.className = "flex flex-col space-y-1 pb-3 border-b border-slate-50";
             const time = data ? data.time : getTimestamp();
             div.innerHTML = `
-                <div class="flex justify-between items-center text-[9px]">
-                    <span class="timestamp">${time}</span>
-                    <button onclick="secureDeleteRow(this, 'payroll')" class="text-slate-300"><i class="fas fa-times"></i></button>
-                </div>
+                <div class="flex justify-between items-center"><span class="timestamp">${time}</span><button onclick="secureDeleteRow(this, 'payroll')" class="text-slate-200 text-xs"><i class="fas fa-times"></i></button></div>
                 <div class="flex gap-2">
-                    <input type="text" placeholder="Nombre Trabajador" value="${data ? data.name : ''}" class="input-nova text-xs flex-1">
-                    <input type="number" placeholder="$ Pago" value="${data ? data.pay : ''}" class="input-nova text-xs w-28 font-black text-purple-600">
+                    <input type="text" placeholder="Nombre" value="${data ? data.name : ''}" class="input-nova text-xs flex-1">
+                    <input type="number" placeholder="$" value="${data ? data.pay : ''}" class="input-nova text-xs w-24 font-black">
                 </div>
             `;
             container.appendChild(div);
@@ -196,16 +203,13 @@
         function addExpenseRow(data = null) {
             const container = document.getElementById('expenses-container');
             const div = document.createElement('div');
-            div.className = "flex flex-col space-y-2 pb-4 border-b border-slate-50";
+            div.className = "flex flex-col space-y-1 pb-3 border-b border-slate-50";
             const time = data ? data.time : getTimestamp();
             div.innerHTML = `
-                <div class="flex justify-between items-center text-[9px]">
-                    <span class="timestamp">${time}</span>
-                    <button onclick="secureDeleteRow(this, 'expenses')" class="text-slate-300"><i class="fas fa-times"></i></button>
-                </div>
+                <div class="flex justify-between items-center"><span class="timestamp">${time}</span><button onclick="secureDeleteRow(this, 'expenses')" class="text-slate-200 text-xs"><i class="fas fa-times"></i></button></div>
                 <div class="flex gap-2">
-                    <input type="text" placeholder="Descripción del Gasto" value="${data ? data.desc : ''}" class="input-nova text-xs flex-1">
-                    <input type="number" placeholder="$ Monto" value="${data ? data.pay : ''}" class="input-nova text-xs w-28 font-black text-rose-600">
+                    <input type="text" placeholder="Gasto" value="${data ? data.desc : ''}" class="input-nova text-xs flex-1">
+                    <input type="number" placeholder="$" value="${data ? data.pay : ''}" class="input-nova text-xs w-24 font-black">
                 </div>
             `;
             container.appendChild(div);
@@ -213,65 +217,56 @@
         }
 
         function secureDeleteRow(btn, type) {
-            const code = prompt("CÓDIGO DE SEGURIDAD:");
-            if(code === MASTER_CODE) {
-                btn.closest(type === 'routes' ? '.glass-card' : 'div').remove();
-                saveSystem();
-            }
+            const code = prompt("CÓDIGO:");
+            if(code === MASTER_CODE) { btn.closest(type === 'routes' ? '.glass-card' : 'div').remove(); saveSystem(); }
         }
 
         function saveSystem() {
-            // Recopilar Datos
-            db.routes = [];
-            let totalCajasEntregadas = 0;
+            // Rutas
+            db.routes = []; let totalCajas = 0;
             document.querySelectorAll('#routes-container > .glass-card').forEach(el => {
                 const ins = el.querySelectorAll('input');
-                const qty = parseInt(ins[2].value) || 0;
-                totalCajasEntregadas += qty;
-                db.routes.push({ name: ins[0].value, addr: ins[1].value, qty: qty, time: el.querySelector('.timestamp').innerText });
+                const q = parseInt(ins[2].value) || 0;
+                totalCajas += q;
+                db.routes.push({ name: ins[0].value, addr: ins[1].value, qty: q, time: el.querySelector('.timestamp').innerText });
             });
 
-            db.payroll = [];
-            let totalPayroll = 0;
+            // Nómina
+            db.payroll = []; let totalPayroll = 0;
             document.querySelectorAll('#payroll-container > div').forEach(el => {
-                const ins = el.querySelectorAll('input');
-                if(ins.length < 2) return;
-                const pay = parseInt(ins[1].value) || 0;
-                totalPayroll += pay;
-                db.payroll.push({ name: ins[0].value, pay: pay, time: el.querySelector('.timestamp').innerText });
+                const ins = el.querySelectorAll('input'); if(ins.length < 2) return;
+                const p = parseInt(ins[1].value) || 0; totalPayroll += p;
+                db.payroll.push({ name: ins[0].value, pay: p, time: el.querySelector('.timestamp').innerText });
             });
 
-            db.expenses = [];
-            let totalExpenses = 0;
+            // Gastos
+            db.expenses = []; let totalExpenses = 0;
             document.querySelectorAll('#expenses-container > div').forEach(el => {
-                const ins = el.querySelectorAll('input');
-                if(ins.length < 2) return;
-                const pay = parseInt(ins[1].value) || 0;
-                totalExpenses += pay;
-                db.expenses.push({ desc: ins[0].value, pay: pay, time: el.querySelector('.timestamp').innerText });
+                const ins = el.querySelectorAll('input'); if(ins.length < 2) return;
+                const p = parseInt(ins[1].value) || 0; totalExpenses += p;
+                db.expenses.push({ desc: ins[0].value, pay: p, time: el.querySelector('.timestamp').innerText });
             });
 
-            // Cálculos
-            const currentStock = db.initial_stock - totalCajasEntregadas;
-            const totalSalesMoney = totalCajasEntregadas * db.price;
-            const finalUtility = totalSalesMoney - totalPayroll - totalExpenses;
+            const currentStock = db.initial_stock - totalCajas;
+            const totalSalesMoney = totalCajas * db.price;
 
-            // Actualizar UI
+            // UI
             document.getElementById('nav-stock').innerText = currentStock;
             document.getElementById('display-stock').innerText = currentStock;
-            document.getElementById('total-boxes-out').innerText = totalCajasEntregadas;
+            document.getElementById('total-boxes-out').innerText = totalCajas;
             document.getElementById('bal-sales').innerText = formatCOP(totalSalesMoney);
             document.getElementById('bal-payroll').innerText = `- ${formatCOP(totalPayroll)}`;
             document.getElementById('bal-expenses').innerText = `- ${formatCOP(totalExpenses)}`;
-            document.getElementById('bal-total').innerText = formatCOP(finalUtility);
+            document.getElementById('bal-total').innerText = formatCOP(totalSalesMoney - totalPayroll - totalExpenses);
 
-            localStorage.setItem('nova_logistics_v6', JSON.stringify(db));
+            localStorage.setItem('nova_price_control', JSON.stringify(db));
         }
 
         window.onload = function() {
-            const saved = JSON.parse(localStorage.getItem('nova_logistics_v6') || '{}');
+            const saved = JSON.parse(localStorage.getItem('nova_price_control') || '{}');
             if(saved.price) {
                 db = saved;
+                document.getElementById('main-price-input').value = db.price;
                 db.payroll.forEach(p => addPayrollRow(p));
                 db.expenses.forEach(e => addExpenseRow(e));
                 db.routes.forEach(r => addRouteRow(r));
