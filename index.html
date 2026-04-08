@@ -3,170 +3,212 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova - Sistema de Gestión Permanente</title>
+    <title>Nova Pro v2.0 - ERP Funcional</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
-        body { font-family: 'Inter', sans-serif; background-color: #f1f5f9; }
-        .card { background: white; border-radius: 16px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); }
-        .input-nova { border: 1px solid #e2e8f0; padding: 8px; border-radius: 8px; width: 100%; }
-        .btn-save { background: #10b981; color: white; font-weight: bold; padding: 10px; border-radius: 8px; width: 100%; }
+        @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
+        body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f8fafc; }
+        .module-section { display: none; }
+        .module-section.active { display: block; animation: slideUp 0.3s ease-out; }
+        @keyframes slideUp { from { opacity: 0; transform: translateY(20px); } to { opacity: 1; transform: translateY(0); } }
+        .nav-card { transition: all 0.2s; border: 1px solid #e2e8f0; }
+        .nav-card:active { transform: scale(0.98); }
+        input[type="number"]::-webkit-inner-spin-button { display: none; }
     </style>
 </head>
-<body>
+<body class="text-slate-900">
 
-<div class="flex min-h-screen">
-    <div class="w-64 bg-slate-900 text-white p-6 hidden md:block">
-        <h1 class="text-2xl font-black mb-8 text-rose-500">NOVA</h1>
-    </div>
-
-    <main class="flex-1 p-6 md:p-12">
-        <header class="flex justify-between items-center mb-10">
-            <div>
-                <h2 class="text-3xl font-bold text-slate-800">Panel Administrativo</h2>
-                <p class="text-slate-500">Pesos Colombianos (COP)</p>
+    <nav class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div onclick="showModule('main-menu')" class="flex items-center space-x-2 cursor-pointer">
+            <div class="w-8 h-8 bg-rose-600 rounded-lg flex items-center justify-center shadow-lg shadow-rose-200">
+                <span class="text-white font-black">N</span>
             </div>
-            <button onclick="saveAll()" id="saveBtn" class="bg-rose-600 text-white px-6 py-3 rounded-xl font-bold hover:bg-rose-700">
-                GUARDAR TODO
-            </button>
-        </header>
+            <h1 class="text-lg font-bold tracking-tight">NOVA <span class="text-rose-600">PRO</span></h1>
+        </div>
+        <div id="save-indicator" class="text-[10px] font-bold text-green-500 bg-green-50 px-3 py-1 rounded-full opacity-0 transition-opacity">
+            <i class="fas fa-check-circle mr-1"></i> SINCRONIZADO
+        </div>
+    </nav>
 
-        <div class="grid grid-cols-1 lg:grid-cols-3 gap-6">
+    <div class="max-w-5xl mx-auto p-6">
+
+        <div id="main-menu" class="module-section active">
+            <header class="mb-8">
+                <h2 class="text-2xl font-extrabold">Panel de Control</h2>
+                <p class="text-slate-500 text-sm">Selecciona una unidad de negocio para gestionar</p>
+            </header>
             
-            <!-- INVENTARIO -->
-            <div class="card p-6 col-span-2">
-                <h3 class="font-bold mb-4">Inventario</h3>
-                <input type="number" id="inv-harina" class="input-nova mb-2" placeholder="Harina (kg)">
-                <input type="number" id="inv-aceite" class="input-nova mb-2" placeholder="Aceite (L)">
-                <input type="number" id="inv-levadura" class="input-nova" placeholder="Levadura (g)">
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-4">
+                <button onclick="showModule('module-inventory')" class="nav-card bg-white p-6 rounded-2xl flex items-center space-x-4 text-left hover:bg-slate-50">
+                    <div class="w-12 h-12 bg-blue-100 text-blue-600 rounded-xl flex items-center justify-center"><i class="fas fa-boxes"></i></div>
+                    <div><h3 class="font-bold">Inventario</h3><p class="text-xs text-slate-400">Insumos (Kg, L, g)</p></div>
+                </button>
+                <button onclick="showModule('module-sales')" class="nav-card bg-white p-6 rounded-2xl flex items-center space-x-4 text-left hover:bg-slate-50">
+                    <div class="w-12 h-12 bg-green-100 text-green-600 rounded-xl flex items-center justify-center"><i class="fas fa-cash-register"></i></div>
+                    <div><h3 class="font-bold">Ventas Diarias</h3><p class="text-xs text-slate-400">Despacho de cajas</p></div>
+                </button>
+                <button onclick="showModule('module-routes')" class="nav-card bg-white p-6 rounded-2xl flex items-center space-x-4 text-left hover:bg-slate-50">
+                    <div class="w-12 h-12 bg-amber-100 text-amber-600 rounded-xl flex items-center justify-center"><i class="fas fa-truck"></i></div>
+                    <div><h3 class="font-bold">Rutas y Tiendas</h3><p class="text-xs text-slate-400">Guía de entrega</p></div>
+                </button>
+                <button onclick="showModule('module-finance')" class="nav-card bg-white p-6 rounded-2xl flex items-center space-x-4 text-left hover:bg-slate-50">
+                    <div class="w-12 h-12 bg-rose-100 text-rose-600 rounded-xl flex items-center justify-center"><i class="fas fa-file-invoice-dollar"></i></div>
+                    <div><h3 class="font-bold">Finanzas</h3><p class="text-xs text-slate-400">Gastos y Maquinaria</p></div>
+                </button>
             </div>
+        </div>
 
-            <!-- MAQUINARIA -->
-            <div class="card p-6">
-                <h3 class="font-bold mb-4">Inversión</h3>
-                <input type="number" id="inv-maquinaria" class="input-nova mb-3" placeholder="Total maquinaria">
-                <div class="bg-slate-900 text-white p-4 rounded">
-                    <span id="display-total-inversion">$0</span>
+        <div id="module-inventory" class="module-section">
+            <button onclick="showModule('main-menu')" class="mb-4 text-sm font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> Volver</button>
+            <div class="bg-white p-6 rounded-3xl shadow-sm border border-slate-100">
+                <h3 class="text-xl font-bold mb-6">Materiales de Producción</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                        <span class="font-semibold text-sm">Harina (Kg)</span>
+                        <input type="number" id="harina" oninput="autoSave()" class="w-24 p-2 rounded-lg border text-center font-bold">
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                        <span class="font-semibold text-sm">Aceite (L)</span>
+                        <input type="number" id="aceite" oninput="autoSave()" class="w-24 p-2 rounded-lg border text-center font-bold">
+                    </div>
+                    <div class="flex items-center justify-between p-3 bg-slate-50 rounded-xl">
+                        <span class="font-semibold text-sm">Azúcar (g)</span>
+                        <input type="number" id="azucar" oninput="autoSave()" class="w-24 p-2 rounded-lg border text-center font-bold">
+                    </div>
                 </div>
             </div>
-
-            <!-- VENTAS -->
-            <div class="card p-6">
-                <h3 class="font-bold mb-4">Ventas</h3>
-                <div id="sales-count" class="text-4xl font-bold">0</div>
-                <div id="sales-money" class="text-green-600 font-bold mb-4">$0</div>
-                <button onclick="changeSales(1)" class="bg-black text-white px-4 py-2 mr-2">+1</button>
-                <button onclick="changeSales(-1)" class="bg-gray-300 px-4 py-2">-1</button>
-            </div>
-
-            <!-- GASTOS -->
-            <div class="card p-6">
-                <h3 class="font-bold mb-4">Gastos</h3>
-                <input type="number" id="pago-nomina" class="input-nova mb-2" placeholder="Nómina">
-                <textarea id="gastos-extra" class="input-nova" placeholder="Otros gastos"></textarea>
-            </div>
-
-            <!-- RUTAS -->
-            <div class="card p-6">
-                <h3 class="font-bold mb-4">Rutas</h3>
-                <input type="text" id="tienda1" class="input-nova mb-2" placeholder="Tienda 1">
-                <input type="text" id="tienda2" class="input-nova mb-2" placeholder="Tienda 2">
-                <input type="text" id="tienda3" class="input-nova">
-            </div>
-
         </div>
-    </main>
-</div>
 
-<script>
-const PRICE_PER_BOX = 12000;
-let sales = 0;
+        <div id="module-sales" class="module-section">
+            <button onclick="showModule('main-menu')" class="mb-4 text-sm font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> Volver</button>
+            <div class="bg-white p-8 rounded-3xl text-center shadow-sm">
+                <h3 class="text-xl font-bold mb-8 text-green-600">Terminal de Despacho</h3>
+                <div class="mb-8">
+                    <div id="v-count" class="text-7xl font-black mb-2">0</div>
+                    <div id="v-money" class="text-xl font-bold text-slate-400">$ 0</div>
+                </div>
+                <div class="grid grid-cols-2 gap-4">
+                    <button onclick="modifySales(1)" class="bg-slate-900 text-white p-6 rounded-2xl font-bold text-xl shadow-lg">+ 1 Caja</button>
+                    <button onclick="modifySales(-1)" class="bg-slate-100 text-slate-400 p-6 rounded-2xl font-bold text-xl">Restar</button>
+                </div>
+            </div>
+        </div>
 
-// FORMATO COP
-function formatCOP(val) {
-    return new Intl.NumberFormat('es-CO', {
-        style: 'currency',
-        currency: 'COP',
-        minimumFractionDigits: 0
-    }).format(Number(val) || 0);
-}
+        <div id="module-routes" class="module-section">
+            <button onclick="showModule('main-menu')" class="mb-4 text-sm font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> Volver</button>
+            <div class="bg-white p-6 rounded-3xl shadow-sm">
+                <h3 class="text-xl font-bold mb-6 text-amber-600">Guía de Entrega Diaria</h3>
+                <div class="space-y-4">
+                    <div class="flex items-center space-x-3 p-3 border rounded-xl">
+                        <input type="checkbox" id="c1" onchange="autoSave()" class="w-6 h-6 accent-amber-500">
+                        <input type="text" id="t1" oninput="autoSave()" placeholder="Nombre Tienda 1" class="flex-1 outline-none font-medium">
+                    </div>
+                    <div class="flex items-center space-x-3 p-3 border rounded-xl">
+                        <input type="checkbox" id="c2" onchange="autoSave()" class="w-6 h-6 accent-amber-500">
+                        <input type="text" id="t2" oninput="autoSave()" placeholder="Nombre Tienda 2" class="flex-1 outline-none font-medium">
+                    </div>
+                </div>
+            </div>
+        </div>
 
-// ACTUALIZAR VENTAS
-function updateSalesDisplay() {
-    document.getElementById('sales-count').innerText = sales;
-    document.getElementById('sales-money').innerText = formatCOP(sales * PRICE_PER_BOX);
-}
+        <div id="module-finance" class="module-section">
+            <button onclick="showModule('main-menu')" class="mb-4 text-sm font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> Volver</button>
+            <div class="bg-white p-6 rounded-3xl shadow-sm space-y-6">
+                <h3 class="text-xl font-bold text-rose-600">Inversión y Gastos</h3>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 block mb-2 uppercase">Inversión Maquinaria (COP)</label>
+                    <input type="number" id="f-maq" oninput="autoSave()" class="w-full p-4 bg-slate-50 rounded-xl font-bold text-xl" placeholder="$ 0">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 block mb-2 uppercase">Pago Nómina</label>
+                    <input type="number" id="f-nom" oninput="autoSave()" class="w-full p-4 bg-slate-50 rounded-xl font-bold" placeholder="$ 0">
+                </div>
+                <div>
+                    <label class="text-xs font-bold text-slate-400 block mb-2 uppercase">Otros Gastos Extra</label>
+                    <textarea id="f-ext" oninput="autoSave()" class="w-full p-4 bg-slate-50 rounded-xl h-24" placeholder="Detalles..."></textarea>
+                </div>
+            </div>
+        </div>
 
-// CAMBIAR VENTAS
-function changeSales(val) {
-    sales += val;
-    if (sales < 0) sales = 0;
-    updateSalesDisplay();
-    saveAll();
-}
+    </div>
 
-// CALCULAR INVERSIÓN
-function calculateInversion() {
-    const val = Number(document.getElementById('inv-maquinaria').value) || 0;
-    document.getElementById('display-total-inversion').innerText = formatCOP(val);
-}
+    <script>
+        const PRECIO_CAJA = 45000;
+        let ventasActuales = 0;
 
-// GUARDAR TODO
-function saveAll() {
-    const data = {
-        harina: Number(document.getElementById('inv-harina').value) || 0,
-        aceite: Number(document.getElementById('inv-aceite').value) || 0,
-        levadura: Number(document.getElementById('inv-levadura').value) || 0,
-        nomina: Number(document.getElementById('pago-nomina').value) || 0,
-        gastos: document.getElementById('gastos-extra').value,
-        maquinaria: Number(document.getElementById('inv-maquinaria').value) || 0,
-        ventas: sales,
-        tienda1: document.getElementById('tienda1').value,
-        tienda2: document.getElementById('tienda2').value,
-        tienda3: document.getElementById('tienda3').value
-    };
+        // SISTEMA DE NAVEGACIÓN
+        function showModule(id) {
+            document.querySelectorAll('.module-section').forEach(m => m.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
 
-    localStorage.setItem('nova_data', JSON.stringify(data));
+        // FORMATEO DE MONEDA
+        const formatCOP = (n) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(n);
 
-    const btn = document.getElementById('saveBtn');
-    btn.innerText = "GUARDADO ✓";
-    btn.classList.replace('bg-rose-600','bg-green-600');
+        // LÓGICA DE VENTAS
+        function modifySales(n) {
+            ventasActuales += n;
+            if(ventasActuales < 0) ventasActuales = 0;
+            updateSalesUI();
+            autoSave();
+        }
 
-    setTimeout(()=>{
-        btn.innerText = "GUARDAR TODO";
-        btn.classList.replace('bg-green-600','bg-rose-600');
-    },1500);
-}
+        function updateSalesUI() {
+            document.getElementById('v-count').innerText = ventasActuales;
+            document.getElementById('v-money').innerText = formatCOP(ventasActuales * PRECIO_CAJA);
+        }
 
-// CARGAR DATOS
-window.onload = function() {
-    const data = JSON.parse(localStorage.getItem('nova_data') || '{}');
+        // LÓGICA DE AUTOGUARDADO
+        function autoSave() {
+            const data = {
+                inventario: {
+                    h: document.getElementById('harina').value,
+                    a: document.getElementById('aceite').value,
+                    z: document.getElementById('azucar').value
+                },
+                ventas: ventasActuales,
+                rutas: {
+                    t1: document.getElementById('t1').value,
+                    t2: document.getElementById('t2').value,
+                    c1: document.getElementById('c1').checked,
+                    c2: document.getElementById('c2').checked
+                },
+                finanzas: {
+                    m: document.getElementById('f-maq').value,
+                    n: document.getElementById('f-nom').value,
+                    e: document.getElementById('f-ext').value
+                }
+            };
+            localStorage.setItem('nova_pro_db', JSON.stringify(data));
+            
+            // Indicador visual de guardado
+            const ind = document.getElementById('save-indicator');
+            ind.style.opacity = "1";
+            setTimeout(() => ind.style.opacity = "0", 1000);
+        }
 
-    document.getElementById('inv-harina').value = data.harina || 0;
-    document.getElementById('inv-aceite').value = data.aceite || 0;
-    document.getElementById('inv-levadura').value = data.levadura || 0;
-    document.getElementById('pago-nomina').value = data.nomina || 0;
-    document.getElementById('gastos-extra').value = data.gastos || "";
-    document.getElementById('inv-maquinaria').value = data.maquinaria || 0;
+        // CARGA INICIAL DE DATOS
+        window.onload = function() {
+            const saved = JSON.parse(localStorage.getItem('nova_pro_db') || '{}');
+            if(saved.inventario) {
+                document.getElementById('harina').value = saved.inventario.h;
+                document.getElementById('aceite').value = saved.inventario.a;
+                document.getElementById('azucar').value = saved.inventario.z;
+                
+                ventasActuales = saved.ventas || 0;
+                updateSalesUI();
 
-    document.getElementById('tienda1').value = data.tienda1 || "";
-    document.getElementById('tienda2').value = data.tienda2 || "";
-    document.getElementById('tienda3').value = data.tienda3 || "";
+                document.getElementById('t1').value = saved.rutas.t1;
+                document.getElementById('t2').value = saved.rutas.t2;
+                document.getElementById('c1').checked = saved.rutas.c1;
+                document.getElementById('c2').checked = saved.rutas.c2;
 
-    sales = Number(data.ventas) || 0;
-
-    updateSalesDisplay();
-    calculateInversion();
-};
-
-// AUTOGUARDADO + EVENTOS
-document.querySelectorAll('input, textarea').forEach(el => {
-    el.addEventListener('input', () => {
-        calculateInversion();
-        saveAll();
-    });
-});
-</script>
-
+                document.getElementById('f-maq').value = saved.finanzas.m;
+                document.getElementById('f-nom').value = saved.finanzas.n;
+                document.getElementById('f-ext').value = saved.finanzas.e;
+            }
+        };
+    </script>
 </body>
 </html>
