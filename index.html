@@ -3,145 +3,144 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Nova Pro v4.0 - ERP Business Intelligence</title>
+    <title>Nova CTG -BY Carlos.I ERP</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0/css/all.min.css" rel="stylesheet">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;600;700;800&display=swap');
         body { font-family: 'Plus Jakarta Sans', sans-serif; background-color: #f1f5f9; color: #0f172a; }
         .module-section { display: none; }
-        .module-section.active { display: block; animation: fadeIn 0.3s ease-in-out; }
-        @keyframes fadeIn { from { opacity: 0; transform: scale(0.98); } to { opacity: 1; transform: scale(1); } }
-        .glass-card { background: white; border-radius: 28px; padding: 24px; border: 1px solid #e2e8f0; }
-        .input-nova { background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 12px; border-radius: 14px; width: 100%; font-weight: 600; outline: none; }
-        .input-nova:focus { border-color: #f43f5e; background: white; }
-        .btn-primary { background: #0f172a; color: white; padding: 12px 20px; border-radius: 14px; font-weight: 700; transition: all 0.2s; }
-        .btn-primary:active { transform: scale(0.95); }
+        .module-section.active { display: block; animation: fadeIn 0.3s ease-out; }
+        @keyframes fadeIn { from { opacity: 0; transform: translateY(10px); } to { opacity: 1; transform: translateY(0); } }
+        .glass-card { background: white; border-radius: 24px; padding: 20px; border: 1px solid #e2e8f0; }
+        .input-nova { background: #f8fafc; border: 1.5px solid #e2e8f0; padding: 10px; border-radius: 12px; width: 100%; font-weight: 600; outline: none; }
+        .btn-lock { background: #0f172a; color: white; padding: 10px 15px; border-radius: 12px; font-weight: 700; font-size: 12px; }
     </style>
 </head>
-<body class="pb-24">
+<body class="pb-20">
 
-    <nav class="bg-white border-b border-slate-200 px-6 py-4 flex justify-between items-center sticky top-0 z-50">
-        <div onclick="showModule('main-menu')" class="flex items-center space-x-3 cursor-pointer">
-            <div class="w-10 h-10 bg-rose-600 rounded-xl flex items-center justify-center shadow-lg shadow-rose-200">
-                <span class="text-white font-black text-xl">N</span>
+    <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50">
+        <div onclick="showModule('main-menu')" class="flex items-center space-x-2 cursor-pointer">
+            <div class="w-9 h-9 bg-rose-600 rounded-lg flex items-center justify-center shadow-lg shadow-rose-100">
+                <span class="text-white font-black">N</span>
             </div>
-            <h1 class="text-xl font-black tracking-tighter">NOVA PRO</h1>
+            <h1 class="text-lg font-black tracking-tighter uppercase">Nova System</h1>
         </div>
-        <div id="save-tag" class="text-[10px] font-bold text-slate-400">SISTEMA ACTIVO</div>
+        <div class="flex items-center space-x-2">
+            <span class="text-[10px] font-bold text-slate-400">STOCK: <span id="nav-stock" class="text-rose-600">0</span></span>
+        </div>
     </nav>
 
-    <div class="max-w-5xl mx-auto p-6">
+    <div class="max-w-4xl mx-auto p-4">
 
         <div id="main-menu" class="module-section active">
-            <div class="mb-8">
-                <h2 class="text-3xl font-black">Dashboard Empresarial</h2>
-                <p class="text-slate-500 font-medium">Gestión integral de Nova</p>
-            </div>
-            
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4 mb-8">
-                <div class="glass-card bg-emerald-50 border-emerald-100">
-                    <p class="text-xs font-bold text-emerald-600 uppercase">Utilidad Diaria Estimada</p>
-                    <h3 id="dash-utility" class="text-2xl font-black text-emerald-700">$ 0</h3>
-                </div>
-                <div class="glass-card bg-rose-50 border-rose-100">
-                    <p class="text-xs font-bold text-rose-600 uppercase">Cajas Despachadas</p>
-                    <h3 id="dash-sales" class="text-2xl font-black text-rose-700">0</h3>
-                </div>
-                <div onclick="showModule('module-settings')" class="glass-card bg-slate-900 cursor-pointer">
-                    <p class="text-xs font-bold text-slate-400 uppercase">Precio Configurado</p>
-                    <h3 id="dash-price" class="text-2xl font-black text-white">$ 0</h3>
-                </div>
+            <div class="grid grid-cols-2 gap-4">
+                <button onclick="showModule('module-inventory')" class="glass-card flex flex-col items-center">
+                    <i class="fas fa-warehouse text-blue-500 mb-2"></i><span class="text-xs font-bold uppercase">Producción</span>
+                </button>
+                <button onclick="showModule('module-sales')" class="glass-card flex flex-col items-center">
+                    <i class="fas fa-cash-register text-emerald-500 mb-2"></i><span class="text-xs font-bold uppercase">Ventas</span>
+                </button>
+                <button onclick="showModule('module-routes')" class="glass-card flex flex-col items-center">
+                    <i class="fas fa-map-marked-alt text-amber-500 mb-2"></i><span class="text-xs font-bold uppercase">Rutas</span>
+                </button>
+                <button onclick="showModule('module-finance')" class="glass-card flex flex-col items-center">
+                    <i class="fas fa-book text-rose-500 mb-2"></i><span class="text-xs font-bold uppercase">Libro Diario</span>
+                </button>
             </div>
 
-            <div class="grid grid-cols-2 md:grid-cols-4 gap-4">
-                <button onclick="showModule('module-inventory')" class="glass-card flex flex-col items-center hover:shadow-xl transition"><i class="fas fa-boxes text-blue-500 mb-2"></i><span class="text-xs font-bold">Inventario</span></button>
-                <button onclick="showModule('module-sales')" class="glass-card flex flex-col items-center hover:shadow-xl transition"><i class="fas fa-cash-register text-emerald-500 mb-2"></i><span class="text-xs font-bold">Ventas</span></button>
-                <button onclick="showModule('module-routes')" class="glass-card flex flex-col items-center hover:shadow-xl transition"><i class="fas fa-truck text-amber-500 mb-2"></i><span class="text-xs font-bold">Rutas Log.</span></button>
-                <button onclick="showModule('module-payroll')" class="glass-card flex flex-col items-center hover:shadow-xl transition"><i class="fas fa-users text-purple-500 mb-2"></i><span class="text-xs font-bold">Nómina</span></button>
-                <button onclick="showModule('module-finance')" class="glass-card flex flex-col items-center hover:shadow-xl transition"><i class="fas fa-chart-line text-rose-500 mb-2"></i><span class="text-xs font-bold">Finanzas</span></button>
-            </div>
-        </div>
-
-        <div id="module-routes" class="module-section">
-            <div class="flex justify-between items-center mb-6">
-                <button onclick="showModule('main-menu')" class="font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
-                <button onclick="addRouteRow()" class="btn-primary text-xs">+ AGREGAR TIENDA</button>
-            </div>
-            <div id="routes-container" class="space-y-4">
-                </div>
-        </div>
-
-        <div id="module-payroll" class="module-section">
-            <div class="flex justify-between items-center mb-6">
-                <button onclick="showModule('main-menu')" class="font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
-                <button onclick="addPayrollRow()" class="btn-primary text-xs">+ REGISTRAR TRABAJADOR</button>
-            </div>
-            <div id="payroll-container" class="space-y-4">
-                </div>
-        </div>
-
-        <div id="module-sales" class="module-section text-center">
-            <button onclick="showModule('main-menu')" class="mb-6 block font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
-            <div class="glass-card bg-slate-900 text-white p-12">
-                <h3 class="text-rose-500 font-bold tracking-widest uppercase text-xs mb-4">Producción Vendida</h3>
-                <div id="sales-count" class="text-8xl font-black mb-4">0</div>
-                <div id="sales-money" class="text-2xl font-bold text-emerald-400">$ 0</div>
-                <div class="flex gap-4 mt-10">
-                    <button onclick="changeSales(1)" class="flex-1 bg-rose-600 p-6 rounded-3xl text-3xl font-black active:scale-95 transition">+1</button>
-                    <button onclick="changeSales(-1)" class="w-24 bg-slate-800 p-6 rounded-3xl text-xl font-bold hover:text-rose-500 transition">-</button>
+            <div class="mt-6 glass-card bg-slate-900 text-white">
+                <h3 class="text-[10px] font-black uppercase text-slate-400 mb-4">Balance General</h3>
+                <div class="flex justify-between items-end">
+                    <div>
+                        <p class="text-xs font-bold text-emerald-400">Utilidad Total</p>
+                        <h2 id="total-utility" class="text-2xl font-black">$ 0</h2>
+                    </div>
+                    <button onclick="showModule('module-settings')" class="text-xs bg-slate-800 p-2 rounded-lg"><i class="fas fa-cog"></i></button>
                 </div>
             </div>
         </div>
 
         <div id="module-inventory" class="module-section">
-            <div class="flex justify-between items-center mb-6">
-                <button onclick="showModule('main-menu')" class="font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
-                <button onclick="addInventoryRow()" class="btn-primary text-xs">+ NUEVO INSUMO</button>
+            <button onclick="showModule('main-menu')" class="mb-4 text-xs font-bold text-slate-400 uppercase"><i class="fas fa-arrow-left mr-1"></i> Volver</button>
+            <div class="glass-card text-center">
+                <h3 class="font-black mb-4 uppercase text-sm">Cajas en Bodega</h3>
+                <div id="display-stock" class="text-6xl font-black text-blue-600 mb-6">0</div>
+                <div class="flex space-x-2">
+                    <input type="number" id="input-add-stock" class="input-nova text-center" placeholder="Cant. a agregar">
+                    <button onclick="addStock()" class="btn-lock bg-blue-600 text-white px-6">AGREGAR</button>
+                </div>
+                <p class="mt-4 text-[10px] text-slate-400 font-bold">Nota: Al despachar en Ventas, este número bajará automáticamente.</p>
             </div>
-            <div id="inventory-container" class="space-y-3"></div>
+        </div>
+
+        <div id="module-routes" class="module-section">
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase"><i class="fas fa-arrow-left mr-1"></i> Volver</button>
+                <button onclick="addRouteRow()" class="btn-lock">+ NUEVA RUTA</button>
+            </div>
+            <div id="routes-container" class="space-y-3"></div>
+        </div>
+
+        <div id="module-sales" class="module-section text-center">
+            <button onclick="showModule('main-menu')" class="mb-4 block text-xs font-bold text-slate-400 uppercase text-left"><i class="fas fa-arrow-left mr-1"></i> Volver</button>
+            <div class="glass-card bg-white p-10">
+                <h3 class="text-xs font-black text-slate-400 uppercase mb-4 tracking-widest">Despacho de Hoy</h3>
+                <div id="sales-count" class="text-7xl font-black mb-2 text-slate-900">0</div>
+                <div id="sales-money" class="text-xl font-bold text-emerald-600 mb-8">$ 0</div>
+                <div class="flex gap-2">
+                    <button onclick="updateSales(1)" class="flex-1 bg-rose-600 text-white p-6 rounded-2xl font-black text-2xl active:scale-95 transition">+1 CAJA</button>
+                    <button onclick="secureDelete('sales')" class="w-16 bg-slate-100 text-slate-300 rounded-2xl"><i class="fas fa-undo"></i></button>
+                </div>
+            </div>
         </div>
 
         <div id="module-finance" class="module-section">
-            <button onclick="showModule('main-menu')" class="mb-6 font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
-            <div class="grid grid-cols-1 md:grid-cols-2 gap-6">
-                <div class="glass-card">
-                    <h3 class="font-black mb-6 flex items-center"><i class="fas fa-calculator mr-2 text-rose-500"></i> Balance Diario</h3>
-                    <div class="space-y-4 text-sm font-bold">
-                        <div class="flex justify-between border-b pb-2"><span>(+) Ventas Totales</span><span id="bal-sales" class="text-emerald-600">$ 0</span></div>
-                        <div class="flex justify-between border-b pb-2"><span>(-) Compras Insumos</span><span id="bal-inv" class="text-rose-500">$ 0</span></div>
-                        <div class="flex justify-between border-b pb-2"><span>(-) Nómina Total</span><span id="bal-pay" class="text-rose-500">$ 0</span></div>
-                        <div class="flex justify-between border-b pb-2"><span>(-) Gastos Extra</span><span id="bal-ext" class="text-rose-500">$ 0</span></div>
-                        <div class="flex justify-between text-xl font-black pt-4"><span>UTILIDAD NETA</span><span id="bal-total" class="text-blue-600">$ 0</span></div>
-                    </div>
+            <div class="flex justify-between items-center mb-4">
+                <button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase"><i class="fas fa-arrow-left mr-1"></i> Volver</button>
+                <div class="flex space-x-2">
+                    <button onclick="addExpenseRow()" class="btn-lock bg-rose-600">GASTO</button>
+                    <button onclick="addPayrollRow()" class="btn-lock bg-purple-600">NÓMINA</button>
                 </div>
-                <div class="glass-card space-y-4">
-                    <h3 class="font-black mb-2 italic text-slate-400 uppercase text-[10px]">Otros Datos de Control</h3>
-                    <input type="number" id="fin-maq" oninput="updateSystem()" class="input-nova" placeholder="Valor Maquinaria">
-                    <textarea id="fin-ext-desc" oninput="updateSystem()" class="input-nova h-32" placeholder="Detalle de gastos extraordinarios..."></textarea>
-                </div>
+            </div>
+            
+            <div class="glass-card mb-4 overflow-x-auto">
+                <h3 class="font-black text-sm mb-4">Historial de Movimientos</h3>
+                <table class="w-full text-[11px]">
+                    <thead class="bg-slate-50 text-slate-400 uppercase">
+                        <tr>
+                            <th class="p-2 text-left">Detalle</th>
+                            <th class="p-2 text-left">Fecha/Hora</th>
+                            <th class="p-2 text-right">Monto</th>
+                            <th class="p-2 text-center">Acción</th>
+                        </tr>
+                    </thead>
+                    <tbody id="finance-history-body">
+                        </tbody>
+                </table>
             </div>
         </div>
 
         <div id="module-settings" class="module-section">
-            <button onclick="showModule('main-menu')" class="mb-6 font-bold text-slate-400"><i class="fas fa-arrow-left mr-2"></i> VOLVER</button>
-            <div class="glass-card max-w-sm mx-auto">
-                <h3 class="font-black mb-4">Ajustes Generales</h3>
+            <button onclick="showModule('main-menu')" class="mb-4 text-xs font-bold text-slate-400 uppercase"><i class="fas fa-arrow-left mr-1"></i> Volver</button>
+            <div class="glass-card">
+                <h3 class="font-black mb-4">Ajustes de Sistema</h3>
                 <label class="text-[10px] font-bold text-slate-400 uppercase">Precio por Caja (COP)</label>
-                <input type="number" id="box-price" oninput="updateSystem()" class="input-nova text-2xl font-black text-rose-600 mb-4" placeholder="45000">
+                <input type="number" id="config-price" oninput="saveSystem()" class="input-nova text-xl text-rose-600 font-bold mb-4" placeholder="48000">
             </div>
         </div>
 
     </div>
 
     <script>
+        const MASTER_CODE = "26822231";
         let db = {
-            price: 45000,
+            stock: 0,
             sales: 0,
-            inventory: [],
+            price: 48000,
             routes: [],
-            payroll: [],
-            finance: { maq: 0, ext: "" }
+            expenses: [], // {desc, date, amount, type}
+            payroll: []
         };
 
         const formatCOP = (n) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(n);
@@ -149,136 +148,170 @@
         function showModule(id) {
             document.querySelectorAll('.module-section').forEach(m => m.classList.remove('active'));
             document.getElementById(id).classList.add('active');
-            window.scrollTo(0,0);
+            if(id === 'module-finance') renderFinanceHistory();
+        }
+
+        // --- LÓGICA DE STOCK ---
+        function addStock() {
+            const val = parseInt(document.getElementById('input-add-stock').value) || 0;
+            db.stock += val;
+            document.getElementById('input-add-stock').value = "";
+            saveSystem();
+        }
+
+        // --- LÓGICA DE VENTAS ---
+        function updateSales(n) {
+            if(n > 0 && db.stock <= 0) {
+                alert("¡Sin stock disponible! Agrega cajas en Producción.");
+                return;
+            }
+            db.sales += n;
+            db.stock -= n;
+            if(db.sales < 0) db.sales = 0;
+            saveSystem();
         }
 
         // --- LÓGICA DE RUTAS ---
-        function addRouteRow(data = { name: '', addr: '', qty: 0, check: false }) {
+        function addRouteRow(data = null) {
             const container = document.getElementById('routes-container');
             const div = document.createElement('div');
-            div.className = "glass-card grid grid-cols-1 md:grid-cols-4 gap-4 items-center";
+            div.className = "glass-card space-y-3";
+            const now = new Date().toLocaleString('es-CO');
+            
             div.innerHTML = `
-                <div class="md:col-span-2">
-                    <input type="text" placeholder="Nombre Tienda" value="${data.name}" class="font-black text-sm outline-none w-full mb-1">
-                    <input type="text" placeholder="Dirección" value="${data.addr}" class="text-[10px] text-slate-400 w-full outline-none">
+                <div class="flex justify-between items-center border-b pb-2">
+                    <input type="text" placeholder="Tienda/Cliente" value="${data ? data.name : ''}" class="font-bold text-sm outline-none bg-transparent">
+                    <span class="text-[9px] font-bold text-slate-400">${data ? data.time : now}</span>
                 </div>
-                <div class="flex items-center space-x-3">
-                    <input type="number" placeholder="Cajas" value="${data.qty}" class="w-16 bg-slate-100 p-2 rounded-lg font-bold text-center">
-                    <div class="text-[10px] font-bold text-emerald-600 bg-emerald-50 p-2 rounded">Debe: <br><span class="money-row"></span></div>
-                </div>
-                <div class="flex justify-end space-x-4 items-center">
-                    <input type="checkbox" ${data.check ? 'checked' : ''} class="w-6 h-6 accent-rose-600">
-                    <button onclick="this.closest('.glass-card').remove(); updateSystem();" class="text-slate-300 hover:text-red-500"><i class="fas fa-trash"></i></button>
+                <div class="grid grid-cols-2 gap-2">
+                    <input type="text" placeholder="Dirección" value="${data ? data.addr : ''}" class="input-nova text-[10px]">
+                    <div class="flex items-center space-x-2">
+                        <input type="number" placeholder="Cajas" value="${data ? data.qty : 0}" class="input-nova text-center font-bold text-blue-600">
+                        <button onclick="secureDelete('route', this)" class="text-slate-200"><i class="fas fa-trash"></i></button>
+                    </div>
                 </div>
             `;
             container.appendChild(div);
-            div.querySelectorAll('input').forEach(i => i.addEventListener('input', updateSystem));
+            div.querySelectorAll('input').forEach(i => i.addEventListener('input', saveSystem));
         }
 
-        // --- LÓGICA DE NÓMINA ---
-        function addPayrollRow(data = { name: '', date: '', hours: 0, pay: 0 }) {
-            const container = document.getElementById('payroll-container');
-            const div = document.createElement('div');
-            div.className = "glass-card grid grid-cols-2 md:grid-cols-4 gap-4 items-center";
-            div.innerHTML = `
-                <input type="text" placeholder="Trabajador" value="${data.name}" class="font-bold text-sm outline-none">
-                <input type="date" value="${data.date}" class="text-xs bg-slate-50 p-2 rounded-lg outline-none">
-                <input type="number" placeholder="Horas" value="${data.hours}" class="w-full bg-slate-50 p-2 rounded-lg text-center font-bold">
-                <div class="flex items-center space-x-2">
-                    <input type="number" placeholder="$ Pago" value="${data.pay}" class="flex-1 bg-slate-900 text-white p-2 rounded-lg text-xs font-bold text-center">
-                    <button onclick="this.closest('.glass-card').remove(); updateSystem();" class="text-slate-200 hover:text-red-500"><i class="fas fa-times-circle"></i></button>
-                </div>
-            `;
-            container.appendChild(div);
-            div.querySelectorAll('input').forEach(i => i.addEventListener('input', updateSystem));
+        // --- LÓGICA FINANCIERA ---
+        function addExpenseRow() {
+            const desc = prompt("Detalle del gasto:");
+            const amount = prompt("Monto en pesos:");
+            if(desc && amount) {
+                db.expenses.push({ 
+                    desc, 
+                    amount: parseInt(amount), 
+                    date: new Date().toLocaleString('es-CO'),
+                    type: 'GASTO' 
+                });
+                saveSystem();
+                renderFinanceHistory();
+            }
         }
 
-        // --- LÓGICA DE INVENTARIO ---
-        function addInventoryRow(data = { name: '', cost: 0 }) {
-            const container = document.getElementById('inventory-container');
-            const div = document.createElement('div');
-            div.className = "glass-card flex justify-between items-center py-3";
-            div.innerHTML = `
-                <input type="text" placeholder="Insumo comprado" value="${data.name}" class="font-bold outline-none flex-1">
-                <div class="flex items-center space-x-3">
-                    <span class="text-[10px] font-bold text-slate-300">COSTO $</span>
-                    <input type="number" value="${data.cost}" class="w-24 bg-rose-50 text-rose-600 p-2 rounded-lg font-black text-center outline-none">
-                    <button onclick="this.closest('.glass-card').remove(); updateSystem();" class="text-slate-200 hover:text-red-500"><i class="fas fa-minus-circle"></i></button>
-                </div>
-            `;
-            container.appendChild(div);
-            div.querySelectorAll('input').forEach(i => i.addEventListener('input', updateSystem));
+        function addPayrollRow() {
+            const name = prompt("Nombre del trabajador:");
+            const amount = prompt("Monto pagado:");
+            if(name && amount) {
+                db.payroll.push({ 
+                    desc: `NÓMINA: ${name}`, 
+                    amount: parseInt(amount), 
+                    date: new Date().toLocaleString('es-CO'),
+                    type: 'NÓMINA' 
+                });
+                saveSystem();
+                renderFinanceHistory();
+            }
         }
 
-        function changeSales(n) { db.sales += n; if(db.sales < 0) db.sales = 0; updateSystem(); }
+        function renderFinanceHistory() {
+            const body = document.getElementById('finance-history-body');
+            body.innerHTML = "";
+            
+            // Combinar todo para historial
+            let all = [
+                ...db.expenses, 
+                ...db.payroll, 
+                { desc: 'VENTAS DEL DÍA', amount: db.sales * db.price, date: 'Hoy', type: 'VENTA' }
+            ];
+
+            all.forEach((item, index) => {
+                const row = document.createElement('tr');
+                row.className = "border-b";
+                const color = item.type === 'VENTA' ? 'text-emerald-600' : 'text-rose-500';
+                row.innerHTML = `
+                    <td class="p-2 font-bold">${item.desc}</td>
+                    <td class="p-2 text-slate-400">${item.date}</td>
+                    <td class="p-2 text-right font-black ${color}">${formatCOP(item.amount)}</td>
+                    <td class="p-2 text-center">
+                        <button onclick="secureDelete('${item.type}', ${index})" class="text-slate-200 hover:text-rose-500"><i class="fas fa-lock"></i></button>
+                    </td>
+                `;
+                body.appendChild(row);
+            });
+        }
+
+        // --- SEGURIDAD: CÓDIGO MAESTRO ---
+        function secureDelete(type, target) {
+            const code = prompt("Introduce el CÓDIGO DE SEGURIDAD para borrar:");
+            if(code !== MASTER_CODE) {
+                alert("Código incorrecto. Acción cancelada.");
+                return;
+            }
+
+            if(type === 'sales') {
+                db.stock += db.sales;
+                db.sales = 0;
+            } else if(type === 'GASTO') {
+                db.expenses.splice(target, 1);
+            } else if(type === 'NÓMINA') {
+                db.payroll.splice(target, 1);
+            } else if(type === 'route') {
+                target.closest('.glass-card').remove();
+            }
+
+            saveSystem();
+            renderFinanceHistory();
+        }
 
         // --- MOTOR CENTRAL ---
-        function updateSystem() {
-            db.price = document.getElementById('box-price').value || 0;
+        function saveSystem() {
+            db.price = document.getElementById('config-price').value || 48000;
             
-            // Procesar Rutas
+            // Recopilar rutas actuales
             db.routes = [];
             document.querySelectorAll('#routes-container > div').forEach(el => {
                 const ins = el.querySelectorAll('input');
-                const qty = Number(ins[2].value) || 0;
-                el.querySelector('.money-row').innerText = formatCOP(qty * db.price);
-                db.routes.push({ name: ins[0].value, addr: ins[1].value, qty: qty, check: ins[3].checked });
+                db.routes.push({ 
+                    name: ins[0].value, 
+                    addr: ins[1].value, 
+                    qty: parseInt(ins[2].value) || 0,
+                    time: el.querySelector('span').innerText
+                });
             });
 
-            // Procesar Nómina
-            db.payroll = [];
-            let totalPayroll = 0;
-            document.querySelectorAll('#payroll-container > div').forEach(el => {
-                const ins = el.querySelectorAll('input');
-                const p = Number(ins[3].value) || 0;
-                totalPayroll += p;
-                db.payroll.push({ name: ins[0].value, date: ins[1].value, hours: ins[2].value, pay: p });
-            });
-
-            // Procesar Inventario (Compras)
-            db.inventory = [];
-            let totalInv = 0;
-            document.querySelectorAll('#inventory-container > div').forEach(el => {
-                const ins = el.querySelectorAll('input');
-                const cost = Number(ins[1].value) || 0;
-                totalInv += cost;
-                db.inventory.push({ name: ins[0].value, cost: cost });
-            });
-
-            db.finance.maq = document.getElementById('fin-maq').value;
-            db.finance.ext = document.getElementById('fin-ext-desc').value;
-
-            // Cálculos Finales
-            const totalSales = db.sales * db.price;
-            const utility = totalSales - totalInv - totalPayroll;
-
-            // UI DASHBOARD
-            document.getElementById('dash-price').innerText = formatCOP(db.price);
-            document.getElementById('dash-sales').innerText = db.sales;
-            document.getElementById('dash-utility').innerText = formatCOP(utility);
+            // Actualizar UI
+            document.getElementById('display-stock').innerText = db.stock;
+            document.getElementById('nav-stock').innerText = db.stock;
             document.getElementById('sales-count').innerText = db.sales;
-            document.getElementById('sales-money').innerText = formatCOP(totalSales);
+            document.getElementById('sales-money').innerText = formatCOP(db.sales * db.price);
+            
+            const totalOut = db.expenses.reduce((a,b) => a + b.amount, 0) + db.payroll.reduce((a,b) => a + b.amount, 0);
+            const utility = (db.sales * db.price) - totalOut;
+            document.getElementById('total-utility').innerText = formatCOP(utility);
 
-            // UI FINANZAS
-            document.getElementById('bal-sales').innerText = formatCOP(totalSales);
-            document.getElementById('bal-inv').innerText = `- ${formatCOP(totalInv)}`;
-            document.getElementById('bal-pay').innerText = `- ${formatCOP(totalPayroll)}`;
-            document.getElementById('bal-total').innerText = formatCOP(utility);
-
-            localStorage.setItem('nova_pro_v4', JSON.stringify(db));
+            localStorage.setItem('nova_secure_db', JSON.stringify(db));
         }
 
         window.onload = function() {
-            const saved = JSON.parse(localStorage.getItem('nova_pro_v4') || '{}');
+            const saved = JSON.parse(localStorage.getItem('nova_secure_db') || '{}');
             if(saved.price) {
                 db = saved;
-                document.getElementById('box-price').value = db.price;
-                document.getElementById('fin-maq').value = db.finance.maq;
-                document.getElementById('fin-ext-desc').value = db.finance.ext;
-                db.inventory.forEach(i => addInventoryRow(i));
+                document.getElementById('config-price').value = db.price;
                 db.routes.forEach(r => addRouteRow(r));
-                db.payroll.forEach(p => addPayrollRow(p));
-                updateSystem();
+                saveSystem();
             }
         };
     </script>
