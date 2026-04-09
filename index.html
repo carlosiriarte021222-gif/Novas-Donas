@@ -26,7 +26,7 @@
     <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div onclick="showModule('main-menu')" class="flex items-center space-x-2 cursor-pointer">
             <div class="w-9 h-9 bg-rose-600 rounded-lg flex items-center justify-center shadow-lg"><span class="text-white font-black text-xl">N</span></div>
-            <h1 class="text-lg font-black tracking-tighter uppercase leading-none">Novactg</h1>
+            <h1 class="text-lg font-black tracking-tighter uppercase leading-none">Nova 1</h1>
         </div>
         <div class="flex items-center gap-2">
             <div id="sync-indicator" class="cloud-status bg-slate-100 text-slate-400">Sync...</div>
@@ -101,7 +101,6 @@
     </div>
 
     <script>
-        // CONFIGURACIÓN SUPABASE - CON TU LLAVE LARGA
         const SB_URL = "https://vkhiayprbreeokkxkjmg.supabase.co";
         const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZraGlheXByYnJlZW9reGt4am1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MDMwNTAsImV4cCI6MjA5MTI3OTA1MH0.piOLlhSFRUaDOWWg0mdOzs_0uvBcpZCxO2x3qTK5lxM";
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
@@ -112,34 +111,47 @@
         const formatCOP = (n) => new Intl.NumberFormat('es-CO', { style: 'currency', currency: 'COP', minimumFractionDigits: 0 }).format(n);
         const getTimestamp = () => new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: true });
 
+        // FUNCIÓN CRÍTICA: Carga los datos apenas abre la página
         async function loadCloud() {
             const el = document.getElementById('sync-indicator');
-            const { data } = await _supabase.from('sistema_nova').select('datos').eq('id', 1).single();
-            if (data?.datos) {
-                db = { ...db, ...data.datos };
-                renderFromDB();
-                el.innerText = "En Línea"; el.className = "cloud-status bg-emerald-100 text-emerald-600";
+            el.innerText = "Cargando...";
+            try {
+                const { data, error } = await _supabase.from('sistema_nova').select('datos').eq('id', 1).single();
+                if (data && data.datos) {
+                    db = data.datos;
+                    renderFromDB();
+                    el.innerText = "En Línea";
+                    el.className = "cloud-status bg-emerald-100 text-emerald-600";
+                }
+            } catch (e) {
+                el.innerText = "Error Carga";
             }
         }
 
         async function saveCloud() {
             const el = document.getElementById('sync-indicator');
             el.innerText = "Sinc...";
-            await _supabase.from('sistema_nova').update({ datos: db }).eq('id', 1);
-            el.innerText = "En Línea"; el.className = "cloud-status bg-emerald-100 text-emerald-600";
+            const { error } = await _supabase.from('sistema_nova').update({ datos: db }).eq('id', 1);
+            if (!error) {
+                el.innerText = "En Línea";
+                el.className = "cloud-status bg-emerald-100 text-emerald-600";
+            } else {
+                el.innerText = "Error Sync";
+                el.className = "cloud-status bg-rose-100 text-rose-600";
+            }
         }
 
         function renderFromDB() {
-            document.getElementById('price-v').value = db.price;
-            document.getElementById('price-c').value = db.cost;
+            document.getElementById('price-v').value = db.price || 48000;
+            document.getElementById('price-c').value = db.cost || 20000;
             document.getElementById('routes-container').innerHTML = '';
             document.getElementById('losses-container').innerHTML = '';
             document.getElementById('raw-container').innerHTML = '';
             document.getElementById('expenses-container').innerHTML = '';
-            db.routes.forEach(r => addRouteRow(r, false));
-            db.losses.forEach(l => addLossRow(l, false));
-            db.raw.forEach(rm => addRawRow(rm, false));
-            db.expenses.forEach(e => addExpenseRow(e, false));
+            if(db.routes) db.routes.forEach(r => addRouteRow(r, false));
+            if(db.losses) db.losses.forEach(l => addLossRow(l, false));
+            if(db.raw) db.raw.forEach(rm => addRawRow(rm, false));
+            if(db.expenses) db.expenses.forEach(e => addExpenseRow(e, false));
             saveSystem(false);
         }
 
@@ -198,13 +210,22 @@
             db.losses = []; document.querySelectorAll('#losses-container > .glass-card').forEach(el => { const ins = el.querySelectorAll('input'); const v = parseInt(el.querySelector('.val-input').value) || 0; tl += v; db.losses.push({ desc: ins[0].value, pay: v, time: el.querySelector('.timestamp').innerText }); });
             db.raw = []; document.querySelectorAll('#raw-container > .glass-card').forEach(el => { const ins = el.querySelectorAll('input'); const v = parseInt(el.querySelector('.val-input').value) || 0; tr += v; db.raw.push({ item: ins[0].value, pay: v, time: el.querySelector('.timestamp').innerText }); });
             db.expenses = []; document.querySelectorAll('#expenses-container > .glass-card').forEach(el => { const ins = el.querySelectorAll('input'); const v = parseInt(el.querySelector('.val-input').value) || 0; te += v; db.expenses.push({ desc: ins[0].value, pay: v, time: el.querySelector('.timestamp').innerText }); });
+            
             const ventas = tc * db.price; const costProd = tc * db.cost; const utilidad = ventas - costProd - te - tr - tl; const stockActual = db.initial_stock - tc;
-            document.getElementById('nav-stock').innerText = stockActual; document.getElementById('display-stock').innerText = stockActual; document.getElementById('total-boxes-out').innerText = tc;
-            document.getElementById('bal-sales').innerText = formatCOP(ventas); document.getElementById('bal-cost-prod').innerText = `- ${formatCOP(costProd)}`;
-            document.getElementById('bal-out').innerText = `- ${formatCOP(te + tr)}`; document.getElementById('bal-losses').innerText = `- ${formatCOP(tl)}`;
+            
+            document.getElementById('nav-stock').innerText = stockActual; 
+            document.getElementById('display-stock').innerText = stockActual; 
+            document.getElementById('total-boxes-out').innerText = tc;
+            document.getElementById('bal-sales').innerText = formatCOP(ventas); 
+            document.getElementById('bal-cost-prod').innerText = `- ${formatCOP(costProd)}`;
+            document.getElementById('bal-out').innerText = `- ${formatCOP(te + tr)}`; 
+            document.getElementById('bal-losses').innerText = `- ${formatCOP(tl)}`;
             document.getElementById('bal-total').innerText = formatCOP(utilidad);
-            const gu = db.price - db.cost; document.getElementById('gain-unit').innerText = formatCOP(gu);
+            
+            const gu = db.price - db.cost; 
+            document.getElementById('gain-unit').innerText = formatCOP(gu);
             document.getElementById('gain-percent').innerText = `${db.price>0?((gu/db.price)*100).toFixed(0):0}%`;
+            
             if(cloud) saveCloud();
         }
 
@@ -233,6 +254,8 @@
         }
 
         function secureDel(btn) { if(prompt("CÓDIGO:") === MASTER_CODE) { btn.closest('.glass-card').remove(); saveSystem(); } }
+        
+        // LLAMADA AUTOMÁTICA AL ABRIR
         window.onload = loadCloud;
     </script>
 </body>
