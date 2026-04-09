@@ -26,7 +26,7 @@
     <nav class="bg-white border-b px-6 py-4 flex justify-between items-center sticky top-0 z-50 shadow-sm">
         <div onclick="showModule('main-menu')" class="flex items-center space-x-2 cursor-pointer">
             <div class="w-9 h-9 bg-rose-600 rounded-lg flex items-center justify-center shadow-lg"><span class="text-white font-black text-xl">N</span></div>
-            <h1 class="text-lg font-black tracking-tighter uppercase leading-none">Nova</h1>
+            <h1 class="text-lg font-black tracking-tighter uppercase leading-none">Novactg</h1>
         </div>
         <div class="flex items-center gap-2">
             <div id="sync-indicator" class="cloud-status bg-slate-100 text-slate-400">Sync...</div>
@@ -82,7 +82,7 @@
         </div>
 
         <div id="module-inventory" class="module-section">
-            <button onclick="showModule('main-menu')" class="mb-4 text-xs font-bold text-slate-400 uppercase"><i class="fas fa-arrow-left mr-1"></i> Volver</button>
+            <button onclick="showModule('main-menu')" class="mb-4 text-xs font-bold text-slate-400 uppercase">Volver</button>
             <div class="glass-card text-center py-10">
                 <div id="display-stock" class="text-8xl font-black text-slate-900 mb-8">0</div>
                 <div class="flex flex-col gap-3 max-w-xs mx-auto">
@@ -92,37 +92,20 @@
             </div>
         </div>
 
-        <div id="module-routes" class="module-section">
-            <div class="flex justify-between items-center mb-6"><button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase">Volver</button><button onclick="addRouteRow()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ Nueva Entrega</button></div>
-            <div id="routes-container" class="space-y-4"></div>
-        </div>
-
-        <div id="module-losses" class="module-section">
-            <div class="flex justify-between items-center mb-6"><button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase">Volver</button><button onclick="addLossRow()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ Pérdida</button></div>
-            <div id="losses-container" class="space-y-4"></div>
-        </div>
-
-        <div id="module-raw-material" class="module-section">
-            <div class="flex justify-between items-center mb-6"><button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase">Volver</button><button onclick="addRawRow()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ Insumo</button></div>
-            <div id="raw-container" class="space-y-4"></div>
-        </div>
-
-        <div id="module-finance" class="module-section">
-            <div class="flex justify-between items-center mb-6"><button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase">Volver</button><button onclick="addExpenseRow()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ Pago</button></div>
-            <div id="expenses-container" class="space-y-4"></div>
-        </div>
-
-        <div id="module-history" class="module-section">
-            <button onclick="showModule('main-menu')" class="mb-4 text-xs font-bold text-slate-400 uppercase">Volver</button>
-            <div id="history-container" class="space-y-3"></div>
-        </div>
+        <div id="module-routes" class="module-section"><div class="flex justify-between items-center mb-6"><button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase">Volver</button><button onclick="addRouteRow()" class="bg-slate-900 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ Nueva Entrega</button></div><div id="routes-container" class="space-y-4"></div></div>
+        <div id="module-losses" class="module-section"><div class="flex justify-between items-center mb-6"><button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase">Volver</button><button onclick="addLossRow()" class="bg-rose-600 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ Pérdida</button></div><div id="losses-container" class="space-y-4"></div></div>
+        <div id="module-raw-material" class="module-section"><div class="flex justify-between items-center mb-6"><button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase">Volver</button><button onclick="addRawRow()" class="bg-purple-600 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ Insumo</button></div><div id="raw-container" class="space-y-4"></div></div>
+        <div id="module-finance" class="module-section"><div class="flex justify-between items-center mb-6"><button onclick="showModule('main-menu')" class="text-xs font-bold text-slate-400 uppercase">Volver</button><button onclick="addExpenseRow()" class="bg-emerald-600 text-white px-4 py-2 rounded-xl text-[10px] font-black">+ Pago</button></div><div id="expenses-container" class="space-y-4"></div></div>
+        <div id="module-history" class="module-section"><button onclick="showModule('main-menu')" class="mb-4 text-xs font-bold text-slate-400 uppercase">Volver</button><div id="history-container" class="space-y-3"></div></div>
 
     </div>
 
     <script>
+        // CONFIGURACIÓN SUPABASE - CON TU LLAVE LARGA
         const SB_URL = "https://vkhiayprbreeokkxkjmg.supabase.co";
-        const SB_KEY = "sb_publishable_yE8PXM9tFAdnKTYAILiSbQ__sM7e6Y3a9X6c9E0e";
+        const SB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InZraGlheXByYnJlZW9reGt4am1nIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzU3MDMwNTAsImV4cCI6MjA5MTI3OTA1MH0.piOLlhSFRUaDOWWg0mdOzs_0uvBcpZCxO2x3qTK5lxM";
         const _supabase = supabase.createClient(SB_URL, SB_KEY);
+
         const MASTER_CODE = "26822231";
         let db = { initial_stock: 0, price: 48000, cost: 20000, routes: [], expenses: [], raw: [], losses: [], history: [] };
 
@@ -130,15 +113,20 @@
         const getTimestamp = () => new Date().toLocaleTimeString('es-CO', { hour: '2-digit', minute: '2-digit', hour12: true });
 
         async function loadCloud() {
-            const el = document.getElementById('sync-indicator'); el.innerText = "Cargando...";
+            const el = document.getElementById('sync-indicator');
             const { data } = await _supabase.from('sistema_nova').select('datos').eq('id', 1).single();
-            if (data?.datos) { db = { ...db, ...data.datos }; renderFromDB(); el.innerText = "En Línea"; el.className = "cloud-status bg-emerald-100 text-emerald-600"; }
+            if (data?.datos) {
+                db = { ...db, ...data.datos };
+                renderFromDB();
+                el.innerText = "En Línea"; el.className = "cloud-status bg-emerald-100 text-emerald-600";
+            }
         }
 
         async function saveCloud() {
-            const el = document.getElementById('sync-indicator'); el.innerText = "Sinc...";
+            const el = document.getElementById('sync-indicator');
+            el.innerText = "Sinc...";
             await _supabase.from('sistema_nova').update({ datos: db }).eq('id', 1);
-            el.innerText = "En Línea";
+            el.innerText = "En Línea"; el.className = "cloud-status bg-emerald-100 text-emerald-600";
         }
 
         function renderFromDB() {
@@ -221,18 +209,11 @@
         }
 
         function closeDay() {
-            if(confirm("¿Cerrar Día y Guardar Detalle en Historial?")) {
+            if(confirm("¿Cerrar Día y Guardar Detalle?")) {
                 const totalC = parseInt(document.getElementById('total-boxes-out').innerText);
                 const gInsumos = db.raw.reduce((a,b) => a + b.pay, 0) + db.expenses.reduce((a,b) => a + b.pay, 0);
                 const gPerdidas = db.losses.reduce((a,b) => a + b.pay, 0);
-                db.history.unshift({ 
-                    date: new Date().toLocaleDateString('es-CO'), 
-                    util: document.getElementById('bal-total').innerText, 
-                    boxes: totalC,
-                    insumos: formatCOP(gInsumos),
-                    perdidas: formatCOP(gPerdidas),
-                    ventas: document.getElementById('bal-sales').innerText
-                });
+                db.history.unshift({ date: new Date().toLocaleDateString('es-CO'), util: document.getElementById('bal-total').innerText, boxes: totalC, insumos: formatCOP(gInsumos), perdidas: formatCOP(gPerdidas), ventas: document.getElementById('bal-sales').innerText });
                 db.initial_stock -= totalC; db.routes = []; db.expenses = []; db.raw = []; db.losses = [];
                 saveSystem(); renderFromDB();
             }
@@ -243,14 +224,10 @@
             container.innerHTML = db.history.map(h => `
                 <div class="glass-card space-y-3">
                     <div class="flex justify-between items-center border-b pb-2">
-                        <div><p class="text-[10px] font-black text-slate-400 uppercase">${h.date}</p><p class="text-sm font-black text-slate-900">${h.boxes} CAJAS ENTREGADAS</p></div>
-                        <div class="text-right"><p class="text-[9px] font-black text-emerald-600 uppercase">Utilidad Neta</p><p class="text-lg font-black text-emerald-700">${h.util}</p></div>
+                        <div><p class="text-[10px] font-black text-slate-400 uppercase">${h.date}</p><p class="text-sm font-black text-slate-900">${h.boxes} CAJAS</p></div>
+                        <div class="text-right"><p class="text-[9px] font-black text-emerald-600 uppercase">Utilidad</p><p class="text-lg font-black text-emerald-700">${h.util}</p></div>
                     </div>
-                    <div class="flex flex-wrap gap-2">
-                        <span class="detail-pill bg-blue-50 text-blue-600">Ventas: ${h.ventas}</span>
-                        <span class="detail-pill bg-purple-50 text-purple-600">Gastos: ${h.insumos}</span>
-                        <span class="detail-pill bg-rose-50 text-rose-600">Pérdidas: ${h.perdidas}</span>
-                    </div>
+                    <div class="flex flex-wrap gap-2"><span class="detail-pill bg-blue-50 text-blue-600">Ventas: ${h.ventas}</span><span class="detail-pill bg-purple-50 text-purple-600">Gastos: ${h.insumos}</span><span class="detail-pill bg-rose-50 text-rose-600">Pérdidas: ${h.perdidas}</span></div>
                 </div>
             `).join('') || '<p class="text-center text-slate-400 font-bold py-10">Sin historial.</p>';
         }
